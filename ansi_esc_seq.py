@@ -3,9 +3,13 @@
 
 # http://en.wikipedia.org/wiki/ANSI_escape_code
 
-import sys
+from sys import stdout
 
-_stream = sys.stdout
+_stream = stdout
+
+def set_stream(stream):
+    global _stream
+    _stream = stream
 
 def move_cursor_up(n=1):
     _stream.write('\x1b[%dA' % n)
@@ -92,8 +96,6 @@ def print_pyramid(n):
         _stream.write('\n')
 
 if __name__ == '__main__':
-
-    from sys import stdout
 
     earse_entire_display()
     set_cursor_position()
