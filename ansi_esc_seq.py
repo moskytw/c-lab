@@ -62,7 +62,7 @@ def select_graphic_rendition(*args):
     _stream.write(';'.join(str(a) for a in args if a is not None))
     _stream.write('m')
 
-def set_attr(attr=0):
+def set_attribute(attr=0):
     select_graphic_rendition(attr)
 
 def set_color(color=9, attr=None):
@@ -104,7 +104,7 @@ if __name__ == '__main__':
 
     stdout.write('Hello, World!')
     move_cursor_back(6)
-    set_attr(4)
+    set_attribute(4)
     stdout.write('Mosky')
-    set_attr()
+    set_attribute()
     stdout.write('\n\n')
