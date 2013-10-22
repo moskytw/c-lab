@@ -1,6 +1,6 @@
 #include "termios_util.h"
-#include <unistd.h> // usleep, ...
 #include <pthread.h>
+#include <unistd.h> // usleep
 #include <stdio.h>
 
 void* my_listener(void* listener_id) {
