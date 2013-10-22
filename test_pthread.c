@@ -24,11 +24,8 @@ int main(int argc, char* argv[]) {
     }
 
     puts("It is annoying, right? Press 'y' to exit.");
-    char resp = 'n';
     termios_disable_canonical_echo();
-    while (resp != 'y') {
-        scanf("%c", &resp);
-    }
+    while (getchar() != 'y');
     termios_restore();
     pthread_cancel(listener_thread);
 
