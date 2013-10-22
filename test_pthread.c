@@ -49,4 +49,6 @@ int main(int argc, char* argv[]) {
 
     puts("Exit!");
     pthread_exit(NULL);
+
+    return 0;
 }
