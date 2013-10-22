@@ -1,6 +1,21 @@
+#include <termios.h>
 #include <unistd.h> // STDIN_FILENO, usleep, ...
 #include <pthread.h>
 #include <stdio.h>
+
+struct termios my_original_termios;
+
+void termios_set_non_canonical_mode() {
+    struct termios new_termios;
+    tcgetattr(STDIN_FILENO, &my_original_termios);
+    new_termios = my_original_termios;
+    new_termios.c_lflag &= ~ICANON;
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
+}
+
+void termios_restore() {
+    tcsetattr(STDIN_FILENO, TCSANOW, &my_original_termios);
+}
 
 void* my_listener(void* listener_id) {
 
@@ -24,9 +39,12 @@ int main(int argc, char* argv[]) {
 
     puts("It is annoying, right? Say 'y' to exit.");
     char resp = 'n';
+    termios_set_non_canonical_mode();
     while (resp != 'y') {
         scanf("%c", &resp);
+        puts("");
     }
+    termios_restore();
     pthread_cancel(listener_thread);
 
     puts("exit!");
