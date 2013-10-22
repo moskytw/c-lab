@@ -47,6 +47,6 @@ int main(int argc, char* argv[]) {
     termios_restore();
     pthread_cancel(listener_thread);
 
-    puts("exit!");
+    puts("Exit!");
     pthread_exit(NULL);
 }
