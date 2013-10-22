@@ -39,17 +39,3 @@ void set_cursor_position(int n, int m) {
 void reset_cursor_position() {
     set_cursor_position(0, 0);
 }
-
-int main(int argc, const char *argv[]) {
-
-    earse_entire_display();
-    set_cursor_position(1, 1);
-    printf("Hello, World!");
-
-    move_cursor_back(6);
-    printf("Mosky");
-
-    puts("");
-
-    return 0;
-}
