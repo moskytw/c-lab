@@ -5,7 +5,7 @@
 
 struct termios termios_original_attr;
 
-void termios_set_non_canonical_mode() {
+void termios_disable_canonical_echo() {
     struct termios termios_attr;
     tcgetattr(STDIN_FILENO, &termios_original_attr);
     termios_attr = termios_original_attr;
@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
 
     puts("It is annoying, right? Press 'y' to exit.");
     char resp = 'n';
-    termios_set_non_canonical_mode();
+    termios_disable_canonical_echo();
     while (resp != 'y') {
         scanf("%c", &resp);
     }
