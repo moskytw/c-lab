@@ -53,6 +53,7 @@ def set_cursor_position(n=1, m=1):
     _stream.write('\x1b[%d;%dH' % (n, m))
 
 def select_graphic_rendition(*args):
+
     # http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
 
     if not args:
