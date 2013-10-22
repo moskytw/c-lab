@@ -5,7 +5,7 @@
 
 int main(int argc, char* argv[]) {
 
-    fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
+    if (fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK) == -1) return 1;
 
     puts("It is annoying, right? Press 'y' to exit.");
 
