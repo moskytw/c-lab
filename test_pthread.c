@@ -10,6 +10,7 @@ void termios_set_non_canonical_mode() {
     tcgetattr(STDIN_FILENO, &my_original_termios);
     new_termios = my_original_termios;
     new_termios.c_lflag &= ~ICANON;
+    new_termios.c_lflag &= ~ECHO;
     tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
 }
 
@@ -37,12 +38,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    puts("It is annoying, right? Say 'y' to exit.");
+    puts("It is annoying, right? Press 'y' to exit.");
     char resp = 'n';
     termios_set_non_canonical_mode();
     while (resp != 'y') {
         scanf("%c", &resp);
-        puts("");
     }
     termios_restore();
     pthread_cancel(listener_thread);
