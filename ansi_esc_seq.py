@@ -91,7 +91,7 @@ def hide_cursor():
 def show_cursor():
     _stream.write('\x1b[?25h')
 
-def print_pyramid(n):
+def print_pyramid(n=10):
     for i in range(n):
         _stream.write(str.center('*'*(i*2+1), n*2))
         _stream.write('\n')
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
     earse_entire_display()
     set_cursor_position()
-    print_pyramid(10)
+    print_pyramid()
     stdout.write('\n')
 
     stdout.write('Hello, World!')
