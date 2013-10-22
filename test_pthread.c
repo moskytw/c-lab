@@ -3,19 +3,19 @@
 #include <pthread.h>
 #include <stdio.h>
 
-struct termios my_original_termios;
+struct termios termios_original_attr;
 
 void termios_set_non_canonical_mode() {
-    struct termios new_termios;
-    tcgetattr(STDIN_FILENO, &my_original_termios);
-    new_termios = my_original_termios;
-    new_termios.c_lflag &= ~ICANON;
-    new_termios.c_lflag &= ~ECHO;
-    tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
+    struct termios termios_attr;
+    tcgetattr(STDIN_FILENO, &termios_original_attr);
+    termios_attr = termios_original_attr;
+    termios_attr.c_lflag &= ~ICANON;
+    termios_attr.c_lflag &= ~ECHO;
+    tcsetattr(STDIN_FILENO, TCSANOW, &termios_attr);
 }
 
 void termios_restore() {
-    tcsetattr(STDIN_FILENO, TCSANOW, &my_original_termios);
+    tcsetattr(STDIN_FILENO, TCSANOW, &termios_original_attr);
 }
 
 void* my_listener(void* listener_id) {
