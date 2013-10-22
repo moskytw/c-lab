@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include "ansi_esc_seq.h"
+#include <stdio.h>
 
 int main(int argc, const char *argv[]) {
 
@@ -9,7 +9,6 @@ int main(int argc, const char *argv[]) {
 
     move_cursor_back(6);
     printf("Mosky");
-
     puts("");
 
     return 0;
