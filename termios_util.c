@@ -15,4 +15,3 @@ void termios_disable_canonical_echo() {
 void termios_restore() {
     tcsetattr(STDIN_FILENO, TCSANOW, &termios_original_attr);
 }
-
