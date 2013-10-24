@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
     if (fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK) == -1) return 1;
 
     signal(SIGALRM, my_sigalrm_handler);
-    ualarm(500000, 500000);
+    ualarm(500000, 500000); // send signal every 0.5s
 
     puts("It is annoying, right? Press 'y' to exit.");
 
