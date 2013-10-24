@@ -1,3 +1,7 @@
+/*
+ * Use alarm to simulate the async IO.
+ */
+
 #include "termios_util.h"
 #include <signal.h>
 #include <fcntl.h>

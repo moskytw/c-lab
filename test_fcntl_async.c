@@ -1,3 +1,7 @@
+/*
+ * A version improved from test_fcntl.c using O_ASYNC.
+ */
+
 #include "termios_util.h"
 #include <fcntl.h>
 #include <signal.h>

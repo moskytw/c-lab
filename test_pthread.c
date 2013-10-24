@@ -1,3 +1,7 @@
+/*
+ * Use multi-thread (pthread) to simulate async IO.
+ */
+
 #include "termios_util.h"
 #include <pthread.h>
 #include <unistd.h> // usleep

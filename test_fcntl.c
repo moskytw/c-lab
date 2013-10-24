@@ -1,3 +1,9 @@
+/*
+ * The non-blocing IO using fcntl.
+ *
+ * This implementation still has delay between press key and exit.
+ */
+
 #include "termios_util.h"
 #include <fcntl.h>
 #include <unistd.h> // STDIN_FILENO, usleep

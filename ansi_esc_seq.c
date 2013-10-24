@@ -1,3 +1,9 @@
+/*
+ * It implements some of the ANSI escape code.
+ *
+ * Ref: http://en.wikipedia.org/wiki/ANSI_escape_code
+ */
+
 #include <stdio.h>
 
 void move_cursor_up(int n) {

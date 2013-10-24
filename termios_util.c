@@ -1,3 +1,7 @@
+/*
+ * The util helps you to disable the line buffer and the echo.
+ */
+
 #include <termios.h>
 #include <unistd.h> // STDIN_FILENO
 

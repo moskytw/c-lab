@@ -1,3 +1,7 @@
+/*
+ * Use multi-process (fork) to simulate async IO.
+ */
+
 #include "termios_util.h"
 #include <unistd.h> // pid_t, fork, perror
 #include <stdio.h>
