@@ -1,5 +1,7 @@
 /*
  * A version improved from test_fcntl.c using O_ASYNC.
+ *
+ * This implementation will print the text as soon as you press any key.
  */
 
 #include "termios_util.h"
