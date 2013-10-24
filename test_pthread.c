@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
     int tid = 0;
     int return_code = pthread_create(&infinitely_repeat_thread, NULL, my_infinitely_repeat, (void*) &tid);
     if (return_code) {
-        fprintf(stderr, "Can't create thread. pthread_create() returned %d.", return_code);
+        fprintf(stderr, "Can't create thread. pthread_create() returned %d.\n", return_code);
         return 1;
     }
 
@@ -31,6 +31,4 @@ int main(int argc, char* argv[]) {
 
     puts("Exit!");
     pthread_exit(NULL);
-
-    return 0;
 }

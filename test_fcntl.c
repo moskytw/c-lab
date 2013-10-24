@@ -1,6 +1,6 @@
 #include "termios_util.h"
 #include <fcntl.h>
-#include <unistd.h> // usleep, STDIN_FILENO
+#include <unistd.h> // STDIN_FILENO, usleep
 #include <stdio.h>
 
 int main(int argc, char* argv[]) {
