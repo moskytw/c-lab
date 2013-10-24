@@ -7,7 +7,7 @@
 #include <unistd.h> // usleep
 #include <stdio.h>
 
-void* my_infinitely_repeat(void* tid) {
+void* my_infinitely_repeater(void* tid) {
 
     while (1) {
         puts("Hi, main!");
@@ -19,9 +19,9 @@ void* my_infinitely_repeat(void* tid) {
 
 int main(int argc, char* argv[]) {
 
-    pthread_t infinitely_repeat_thread;
+    pthread_t infinitely_repeater_thread;
     int tid = 0;
-    int return_code = pthread_create(&infinitely_repeat_thread, NULL, my_infinitely_repeat, (void*) &tid);
+    int return_code = pthread_create(&infinitely_repeater_thread, NULL, my_infinitely_repeater, (void*) &tid);
     if (return_code) {
         fprintf(stderr, "Can't create thread. pthread_create() returned %d.\n", return_code);
         return 1;
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     while (getchar() != 'y');
     termios_restore();
 
-    pthread_cancel(infinitely_repeat_thread);
+    pthread_cancel(infinitely_repeater_thread);
 
     puts("Exit!");
     pthread_exit(NULL);
