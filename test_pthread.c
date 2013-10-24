@@ -31,6 +31,7 @@ int main(int argc, char* argv[]) {
     termios_disable_canonical_echo();
     while (getchar() != 'y');
     termios_restore();
+
     pthread_cancel(infinitely_repeat_thread);
 
     puts("Exit!");

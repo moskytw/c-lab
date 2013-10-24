@@ -27,11 +27,13 @@ int main(int argc, char* argv[]) {
         termios_disable_canonical_echo();
         while (getchar() != 'y');
         termios_restore();
+
         kill(child_pid, SIGTERM);
 
+        puts("Exit!");
+        return 0;
     }
 
-    puts("Exit!");
+    return 1;
 
-    return 0;
 }
