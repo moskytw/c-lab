@@ -28,10 +28,10 @@ int main(int argc, char* argv[]) {
 
     // Set server address:
     char* addrstr = "127.0.0.1";
-    if (argc >= 2) addrstr = argv[1];
     int port = 80;
-    if (argc >= 3) port = atoi(argv[2]);
     struct sockaddr_in server_sin = {0};
+    if (argc >= 2) addrstr = argv[1];
+    if (argc >= 3) port = atoi(argv[2]);
     server_sin.sin_addr.s_addr = inet_addr(addrstr);
     server_sin.sin_port = htons(port);
 
