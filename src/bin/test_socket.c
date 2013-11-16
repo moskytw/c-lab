@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <unistd.h> // read, write, close
 #include <sys/socket.h>
+#include <stdio.h>
 #include <arpa/inet.h> // sockaddr_in, inet_addr, htons
+#include <unistd.h> // read, write, close
 
 int main(int argc, char* argv[]) {
 
