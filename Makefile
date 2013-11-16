@@ -1,7 +1,7 @@
 # commands
 
 CC = gcc
-CFLAGS = -O3 -ansi -I src/lib
+CFLAGS = -O3 -Wall -I src/lib
 
 # targets
 
