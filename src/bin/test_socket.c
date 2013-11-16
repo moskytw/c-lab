@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
     server_sin.sin_addr.s_addr = inet_addr(addrstr);
     server_sin.sin_port = htons(port);
 
-    if (connect(socket_desc, (struct sockaddr*) &server_sin, sizeof(server_sin)) == -1) {
+    if (connect(socket_desc, (struct sockaddr*) &server_sin, sizeof server_sin) == -1) {
         fprintf(stderr, "Could not make connection to %s:%d\n", addrstr, port);
         return 1;
     }
