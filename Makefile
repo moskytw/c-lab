@@ -7,8 +7,8 @@ CFLAGS = -O3 -Wall -I src/lib
 
 # By default, it scans the all source files (src/bin/%.c) and require them to be
 # built into binary files (bin/%).
-.PHONY: default
-default: $(foreach PATH,$(wildcard src/bin/*.c),$(patsubst src/bin/%.c,bin/%,$(PATH)))
+.PHONY: all
+all: $(foreach PATH,$(wildcard src/bin/*.c),$(patsubst src/bin/%.c,bin/%,$(PATH)))
 
 # Each binary needs the corresponding source file.
 bin/%: src/bin/%.c
