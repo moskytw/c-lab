@@ -4,7 +4,17 @@
 #include <stdio.h>
 #include <stdlib.h>    // atoi
 #include <arpa/inet.h> // sockaddr_in, inet_addr, htons
-#include <unistd.h>    // read, write
+#include <unistd.h>    // write, read, sleep
+
+int my_close(int file_desc) {
+    int return_val;
+    if ((return_val = close(file_desc)) == -1) {
+        fprintf(stderr, "Could not close socket: %s.\n", strerror(errno));
+        return return_val;
+    }
+    puts("The socket is closed.");
+    return return_val;
+}
 
 int main(int argc, char* argv[]) {
 
@@ -28,6 +38,7 @@ int main(int argc, char* argv[]) {
     // Connect to server:
     if (connect(socket_desc, (struct sockaddr*) &server_sin, sizeof server_sin) == -1) {
         fprintf(stderr, "Could not make connection to %s port %d: %s.\n", addrstr, port, strerror(errno));
+        my_close(socket_desc);
         return 1;
     }
     printf("Connected to %s:%d.\n", addrstr, port);
@@ -36,6 +47,7 @@ int main(int argc, char* argv[]) {
     char data[] = "GET / HTTP/1.1\r\n\r\n";
     if (write(socket_desc, data, sizeof data) == -1) {
         fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
+        my_close(socket_desc);
         return 1;
     }
     puts("Data sent.");
@@ -44,17 +56,18 @@ int main(int argc, char* argv[]) {
     puts("--- Data received ---");
     int read_size;
     char buffer[1024];
-    while ((read_size = read(socket_desc, buffer, sizeof buffer)) > 0) {
+    while ((read_size = read(socket_desc, buffer, sizeof buffer))) {
+        if (read_size == -1) {
+            fprintf(stderr, "Could not read data: %s.\n", strerror(errno));
+            my_close(socket_desc);
+            return 1;
+        }
         write(STDOUT_FILENO, buffer, read_size);
     }
     puts("\n--- End ---");
 
     // Close socket:
-    if (close(socket_desc) == -1) {
-        fprintf(stderr, "Could not close socket: %s.\n", strerror(errno));
-        return 1;
-    }
-    puts("The socket is closed.");
+    my_close(socket_desc);
 
     return 0;
 }
