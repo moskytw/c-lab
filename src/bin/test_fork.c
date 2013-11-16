@@ -16,12 +16,16 @@ int main(int argc, char* argv[]) {
 
     } else if (child_pid == 0) {
 
+        // I am child.
+
         while (1) {
             puts("Hi, there!");
             usleep(500000); // 0.5s
         }
 
     } else {
+
+        // I am parent.
 
         puts("It is annoying, right? Press 'y' to exit.");
         termios_disable_canonical_echo();
