@@ -49,12 +49,12 @@ int main(int argc, char* argv[]) {
     }
     puts("\n--- End ---");
 
-    // Shutdown socket:
-    if (shutdown(socket_desc, SHUT_RDWR) == -1) {
-        fprintf(stderr, "Could not shut socket down: %s.\n", strerror(errno));
+    // Close socket:
+    if (close(socket_desc) == -1) {
+        fprintf(stderr, "Could not close socket: %s.\n", strerror(errno));
         return 1;
     }
-    puts("The socket is shut down.");
+    puts("The socket is closed.");
 
     return 0;
 }
