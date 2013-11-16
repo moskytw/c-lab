@@ -7,7 +7,7 @@ CFLAGS = -O3 -Wall -I src/lib
 
 .PHONY: default
 # By default, we scan the all source files (src/bin/%.c) and require them to be
-# built into binary (bin/%).
+# built into executable files (bin/%).
 default: $(foreach PATH,$(wildcard src/bin/*.c),$(patsubst src/bin/%.c,bin/%,$(PATH)))
 
 # Define the dependences:
