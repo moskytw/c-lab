@@ -31,9 +31,6 @@ bin/%:
 obj/%.o: src/lib/%.c
 	$(CC) $(CFLAGS) -c src/lib/$*.c -o obj/$*.o
 
-# Don't remove the object files. They can be reused for next build.
-.PRECIOUS: obj/%.o
-
 .PHONY: clean
 clean:
 	rm bin/* obj/*
