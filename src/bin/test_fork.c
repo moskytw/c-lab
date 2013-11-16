@@ -35,9 +35,9 @@ int main(int argc, char* argv[]) {
         kill(child_pid, SIGTERM);
 
         puts("Exit!");
-        return 0;
+
     }
 
-    return 1;
+    return 0;
 
 }
