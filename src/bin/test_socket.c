@@ -25,7 +25,10 @@ int main(int argc, char* argv[]) {
     }
     printf("Connected to %s:%d.\n", addrstr, port);
 
-    close(socket_desc);
+    if (close(socket_desc) == -1) {
+        fprintf(stderr, "Could not close socket.\n");
+    }
+    puts("The socket is closed.");
 
     return 0;
 }
