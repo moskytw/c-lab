@@ -1,3 +1,4 @@
-*.out
 *.gch
 *.pyc
+obj/*.o
+bin/*
