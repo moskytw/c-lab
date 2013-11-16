@@ -6,13 +6,7 @@ CFLAGS = -O3 -ansi -I src/lib
 # targets
 
 .PHONY: default
-default: bin obj $(foreach PATH,$(wildcard src/bin/*.c),$(patsubst src/bin/%.c,bin/%,$(PATH)))
-
-bin:
-	mkdir bin
-
-obj:
-	mkdir obj
+default: $(foreach PATH,$(wildcard src/bin/*.c),$(patsubst src/bin/%.c,bin/%,$(PATH)))
 
 bin/%: src/bin/%.c $(foreach PATH,$(wildcard src/lib/*.c),$(patsubst src/lib/%.c,obj/%.o,$(PATH)))
 	$(CC) $(CFLAGS) $^ -o $@
@@ -23,6 +17,6 @@ obj/%.o: src/lib/%.c
 
 .PHONY: clean
 clean:
-	rm -r bin obj
+	rm bin/* obj/*
 
 
