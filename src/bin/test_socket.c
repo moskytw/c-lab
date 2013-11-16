@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
     }
     printf("A socket is created. The socket descriptor is %d.\n", socket_desc);
 
-    char* addrstr = "127.0.0.1";
+    char addrstr[] = "127.0.0.1";
     int port = 5000;
     struct sockaddr_in server_sin = {0};
     server_sin.sin_addr.s_addr = inet_addr(addrstr);
