@@ -1,6 +1,7 @@
 #include <sys/socket.h>
 #include <stdio.h>
 #include <arpa/inet.h> // sockaddr_in, inet_addr, htons
+#include <stdlib.h> // atoi
 
 int main(int argc, char* argv[]) {
 
@@ -14,8 +15,10 @@ int main(int argc, char* argv[]) {
     printf("A socket is created. The socket descriptor is %d.\n", socket_desc);
 
     // Set server address:
-    char addrstr[] = "127.0.0.1";
-    int port = 5000;
+    char* addrstr = "127.0.0.1";
+    if (argc >= 2) addrstr = argv[1];
+    int port = 80;
+    if (argc >= 3) port = atoi(argv[2]);
     struct sockaddr_in server_sin = {0};
     server_sin.sin_addr.s_addr = inet_addr(addrstr);
     server_sin.sin_port = htons(port);
