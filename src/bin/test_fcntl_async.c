@@ -1,7 +1,9 @@
 /*
- * A version improved from test_fcntl.c using O_ASYNC.
+ * This is a version improved from test_fcntl.c by using O_ASYNC.
  *
- * This implementation will print the text as soon as you press any key.
+ * It resolved the delay between pressing 'y' and exit. But it still has a
+ * detect, that is it prints "Hi, there!" immediately when you press any other
+ * key.
  */
 
 #include "termios_util.h"
