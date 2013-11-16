@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "Could not create socket.\n");
         return 1;
     }
-    printf("A socket is created. The socket descriptor is %d.\n", socket_desc);
+    printf("The socket descriptor is %d.\n", socket_desc);
 
     // Set server address:
     char* addrstr = "127.0.0.1";
