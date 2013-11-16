@@ -18,13 +18,13 @@ int my_close(int file_desc) {
 
 int main(int argc, char* argv[]) {
 
-    // Create socket:
+    // Open socket:
     int socket_desc = socket(PF_INET, SOCK_STREAM, 0);
     if (socket_desc == -1) {
         fprintf(stderr, "Could not create socket: %s.\n", strerror(errno));
         return 1;
     }
-    printf("The socket descriptor is %d.\n", socket_desc);
+    puts("The socket is opened.");
 
     // Set server address:
     char* addrstr = "127.0.0.1";
@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
 
     // Connect to server:
     if (connect(socket_desc, (struct sockaddr*) &server_sin, sizeof server_sin) == -1) {
-        fprintf(stderr, "Could not make connection to %s port %d: %s.\n", addrstr, port, strerror(errno));
+        fprintf(stderr, "Could not connect to %s on port %d: %s.\n", addrstr, port, strerror(errno));
         my_close(socket_desc);
         return 1;
     }
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
         my_close(socket_desc);
         return 1;
     }
-    puts("Data sent.");
+    puts("Sent data.");
 
     // Receive data from server:
     puts("--- Data received ---");
