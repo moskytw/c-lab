@@ -20,7 +20,7 @@ bin/test_termios_util bin/test_fcntl bin/test_fcntl_async bin/test_alarm bin/tes
 
 # Each object needs corresponding source file.
 obj/%.o: src/lib/%.c
-	$(CC) $(CFLAGS) -c $^ -o obj/$*.o
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 .PHONY: clean
 clean:
