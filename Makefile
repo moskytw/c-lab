@@ -11,7 +11,7 @@ CFLAGS = -O3 -Wall -I src/lib
 default: $(foreach PATH,$(wildcard src/bin/*.c),$(patsubst src/bin/%.c,bin/%,$(PATH)))
 
 # Define the dependences:
-#
+
 bin/test_ansi_esc_seq: src/bin/test_ansi_esc_seq.c obj/ansi_esc_seq.o
 bin/test_termios_util: src/bin/test_termios_util.c obj/termios_util.o
 
