@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>    // atoi
 #include <arpa/inet.h> // sockaddr_in, inet_pton, htons
-#include <unistd.h>    // write, read, sleep, exit
+#include <unistd.h>    // write, read, exit
 
 int my_close(int file_desc) {
     int return_val;
