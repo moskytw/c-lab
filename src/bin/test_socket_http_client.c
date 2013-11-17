@@ -3,7 +3,7 @@
 #include <string.h>    // strerror
 #include <stdio.h>
 #include <stdlib.h>    // atoi
-#include <arpa/inet.h> // sockaddr_in, inet_addr, htons
+#include <arpa/inet.h> // sockaddr_in, inet_pton, htons
 #include <unistd.h>    // write, read, sleep
 
 int my_close(int file_desc) {
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     struct sockaddr_in server_sin = {0};
     if (argc >= 2) addrstr = argv[1];
     if (argc >= 3) port = atoi(argv[2]);
-    server_sin.sin_addr.s_addr = inet_addr(addrstr);
+    inet_pton(PF_INET, addrstr, &(server_sin.sin_addr));
     server_sin.sin_port = htons(port);
 
     // Connect to server:
