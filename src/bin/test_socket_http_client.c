@@ -4,13 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>    // atoi
 #include <arpa/inet.h> // sockaddr_in, inet_pton, htons
-#include <unistd.h>    // write, read, sleep
+#include <unistd.h>    // write, read, sleep, exit
 
 int my_close(int file_desc) {
     int return_val;
     if ((return_val = close(file_desc)) == -1) {
         fprintf(stderr, "Could not close socket: %s.\n", strerror(errno));
-        return return_val;
+        exit(1);
     }
     puts("The socket is closed.");
     return return_val;
@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
     int socket_desc = socket(PF_INET, SOCK_STREAM, 0);
     if (socket_desc == -1) {
         fprintf(stderr, "Could not create socket: %s.\n", strerror(errno));
-        return 1;
+        exit(1);
     }
     puts("The socket is opened.");
 
@@ -32,6 +32,7 @@ int main(int argc, char* argv[]) {
     struct sockaddr_in server_sin = {0};
     if (argc >= 2) addrstr = argv[1];
     if (argc >= 3) port = atoi(argv[2]);
+    server_sin.sin_family = PF_INET;
     inet_pton(PF_INET, addrstr, &(server_sin.sin_addr));
     server_sin.sin_port = htons(port);
 
@@ -39,7 +40,7 @@ int main(int argc, char* argv[]) {
     if (connect(socket_desc, (struct sockaddr*) &server_sin, sizeof server_sin) == -1) {
         fprintf(stderr, "Could not connect to %s on port %d: %s.\n", addrstr, port, strerror(errno));
         my_close(socket_desc);
-        return 1;
+        exit(1);
     }
     printf("Connected to %s:%d.\n", addrstr, port);
 
@@ -48,7 +49,7 @@ int main(int argc, char* argv[]) {
     if (write(socket_desc, data, sizeof data) == -1) {
         fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
         my_close(socket_desc);
-        return 1;
+        exit(1);
     }
     puts("Sent data.");
 
@@ -60,7 +61,7 @@ int main(int argc, char* argv[]) {
         if (read_size == -1) {
             fprintf(stderr, "Could not read data: %s.\n", strerror(errno));
             my_close(socket_desc);
-            return 1;
+            exit(1);
         }
         write(STDOUT_FILENO, buffer, read_size);
     }
@@ -69,5 +70,5 @@ int main(int argc, char* argv[]) {
     // Close socket:
     my_close(socket_desc);
 
-    return 0;
+    exit(0);
 }
