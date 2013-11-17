@@ -27,22 +27,22 @@ int main(int argc, char* argv[]) {
     puts("The socket is opened.");
 
     // Set server address:
-    char* addrstr = "127.0.0.1";
+    char* addr_str = "127.0.0.1";
     int port = 80;
     struct sockaddr_in server_addr = {0};
-    if (argc >= 2) addrstr = argv[1];
+    if (argc >= 2) addr_str = argv[1];
     if (argc >= 3) port = atoi(argv[2]);
     server_addr.sin_family = PF_INET;
-    inet_pton(PF_INET, addrstr, &(server_addr.sin_addr));
+    inet_pton(PF_INET, addr_str, &(server_addr.sin_addr));
     server_addr.sin_port = htons(port);
 
     // Connect to server:
     if (connect(socket_desc, (struct sockaddr*) &server_addr, sizeof server_addr) == -1) {
-        fprintf(stderr, "Could not connect to %s on port %d: %s.\n", addrstr, port, strerror(errno));
+        fprintf(stderr, "Could not connect to %s on port %d: %s.\n", addr_str, port, strerror(errno));
         my_close(socket_desc);
         exit(1);
     }
-    printf("Connected to %s:%d.\n", addrstr, port);
+    printf("Connected to %s:%d.\n", addr_str, port);
 
     // Send data to server:
     char data[] = "GET / HTTP/1.1\r\n\r\n";
