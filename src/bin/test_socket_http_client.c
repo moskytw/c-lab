@@ -29,15 +29,15 @@ int main(int argc, char* argv[]) {
     // Set server address:
     char* addrstr = "127.0.0.1";
     int port = 80;
-    struct sockaddr_in server_sin = {0};
+    struct sockaddr_in server_addr = {0};
     if (argc >= 2) addrstr = argv[1];
     if (argc >= 3) port = atoi(argv[2]);
-    server_sin.sin_family = PF_INET;
-    inet_pton(PF_INET, addrstr, &(server_sin.sin_addr));
-    server_sin.sin_port = htons(port);
+    server_addr.sin_family = PF_INET;
+    inet_pton(PF_INET, addrstr, &(server_addr.sin_addr));
+    server_addr.sin_port = htons(port);
 
     // Connect to server:
-    if (connect(socket_desc, (struct sockaddr*) &server_sin, sizeof server_sin) == -1) {
+    if (connect(socket_desc, (struct sockaddr*) &server_addr, sizeof server_addr) == -1) {
         fprintf(stderr, "Could not connect to %s on port %d: %s.\n", addrstr, port, strerror(errno));
         my_close(socket_desc);
         exit(1);
