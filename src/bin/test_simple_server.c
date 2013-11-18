@@ -130,19 +130,23 @@ int main(int argc, char* argv[]) {
     // Listen for connection:
     my_listen(bound_socket_desc);
 
-    // Accept for a connection as a socket:
-    int remote_socket_desc = my_accept(bound_socket_desc);
+    // Be server forever:
+    while(1) {
 
-    // Receive data:
-    my_receive(remote_socket_desc);
+        // Accept for a connection as a socket:
+        int remote_socket_desc = my_accept(bound_socket_desc);
 
-    // Send data:
-    char data[] = "OK";
-    my_send(remote_socket_desc, data, sizeof data);
+        // Receive data:
+        my_receive(remote_socket_desc);
 
-    // Close remote socket:
-    printf("Close remote socket: ");
-    my_close(remote_socket_desc);
+        // Send data:
+        char data[] = "OK";
+        my_send(remote_socket_desc, data, sizeof data);
+
+        // Close remote socket:
+        printf("Close remote socket: ");
+        my_close(remote_socket_desc);
+    }
 
     // Close bound socket:
     printf("Close bound socket: ");
