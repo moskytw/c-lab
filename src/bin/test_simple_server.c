@@ -115,34 +115,36 @@ void my_receive(int socket_desc) {
 
 int main(int argc, char* argv[]) {
 
-    // Open socket:
+    // Open a socket for binding the address:
     int bound_socket_desc = my_socket_stream();
 
-    // Get the port and addr settings from user:
+    // Get the port and addr settings:
     int port = 5000;
     if (argc >= 2) port = atoi(argv[1]);
     char* addr_str = "0.0.0.0";
     if (argc >= 3) addr_str = argv[2];
 
-    // Bind socket with this address:
+    // Bind the socket with the address:
     my_bind_addr_port_retry(bound_socket_desc, addr_str, port, 3);
 
-    // Listen for a connection from remote:
+    // Listen for connection:
     my_listen(bound_socket_desc);
 
-    // Accept for a connection from remote:
+    // Accept for a connection as a socket:
     int remote_socket_desc = my_accept(bound_socket_desc);
 
-    // Receive data from remote:
+    // Receive data:
     my_receive(remote_socket_desc);
 
-    // Send data to remote:
+    // Send data:
     char data[] = "OK";
     my_send(remote_socket_desc, data, sizeof data);
 
-    // Close the sockets:
+    // Close remote socket:
     printf("Close remote socket: ");
     my_close(remote_socket_desc);
+
+    // Close bound socket:
     printf("Close bound socket: ");
     my_close(bound_socket_desc);
 

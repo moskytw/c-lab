@@ -117,26 +117,26 @@ void my_receive(int socket_desc) {
 
 int main(int argc, char* argv[]) {
 
-    // Open stream socket:
+    // Open stream socket for connecting the address:
     int socket_desc = my_socket_stream();
 
-    // Get the port and addr settings from user:
+    // Get the port and addr settings:
     int port = 5000;
     if (argc >= 2) port = atoi(argv[1]);
     char* addr_str = "127.0.0.1";
     if (argc >= 3) addr_str = argv[2];
 
-    // Connect to remote:
+    // Connect the address using the socket:
     my_connect_addr_port(socket_desc, addr_str, port);
 
-    // Send data to remote:
+    // Send data:
     char data[] = "GET / HTTP/1.1\r\n\r\n";
     my_send(socket_desc, data, sizeof data);
 
     // Tell the remote the data are all sent:
     my_shutdown_write(socket_desc);
 
-    // Receive data from remote:
+    // Receive data:
     my_receive(socket_desc);
 
     // Close the socket:
