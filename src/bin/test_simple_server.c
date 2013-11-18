@@ -14,7 +14,7 @@ int my_socket_stream() {
         fprintf(stderr, "Could not create socket: %s.\n", strerror(errno));
         exit(1);
     }
-    puts("The socket is opened.");
+    puts("Opened a socket.");
     return socket_desc;
 }
 
@@ -36,7 +36,7 @@ void my_bind_addr_port_retry(int bound_socket_desc, char* addr_str, int port, in
     while (retry_limit--) {
         if (bind(bound_socket_desc, (struct sockaddr*) &bind_addr, (socklen_t) sizeof bind_addr) == -1) {
             if (errno == EADDRINUSE) {
-                printf("The address %s on port %d is in use. Try next port.\n", addr_str, port);
+                printf("The address %s port %d is in use. Try next port.\n", addr_str, port);
                 port += 1;
                 bind_addr.sin_port = htons(port);
                 continue;
@@ -76,7 +76,7 @@ int my_accept_addr_port(int bound_socket_desc, char* addr_str, int addr_str_size
         fprintf(stderr, "Could not accept: %s.\n", strerror(errno));
         exit(1);
     }
-    puts("Accepted a connection as a socket.");
+    puts("Accepted a connection as a new socket.");
 
     my_sockaddr_get_addr(&remote_addr, addr_str, addr_str_size);
     my_sockaddr_get_port(&remote_addr, port_ptr);
@@ -85,11 +85,12 @@ int my_accept_addr_port(int bound_socket_desc, char* addr_str, int addr_str_size
 }
 
 void my_send(int socket_desc, char* data, int data_size) {
+    printf("Sending the data ... ");
     if (write(socket_desc, data, data_size) == -1) {
         fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
         exit(1);
     }
-    puts("Sent data.");
+    puts("Done.");
 }
 
 void my_receive(int socket_desc) {
@@ -97,6 +98,7 @@ void my_receive(int socket_desc) {
     int read_size;
     char buffer[1024];
 
+    puts("Receiving the data ... ");
     puts("--- Data received ---");
     while ((read_size = read(socket_desc, buffer, sizeof buffer))) {
         if (read_size == -1) {
@@ -107,6 +109,7 @@ void my_receive(int socket_desc) {
     }
     if (buffer[read_size-1] != '\n') puts("");
     puts("--- End ---");
+    puts("Done.");
 }
 
 int my_close(int file_desc) {
@@ -115,7 +118,7 @@ int my_close(int file_desc) {
         fprintf(stderr, "Could not close socket: %s.\n", strerror(errno));
         exit(1);
     }
-    puts("The socket is closed.");
+    puts("Closed the socket.");
     return return_val;
 }
 
@@ -141,7 +144,7 @@ int main(int argc, char* argv[]) {
 
         puts("\nWaiting for a connection ...");
 
-        // Accept for a connection as a socket:
+        // Accept for a connection as a new socket:
         char addr_str[INET_ADDRSTRLEN];
         int port;
         int remote_socket_desc = my_accept_addr_port(bound_socket_desc, addr_str, sizeof addr_str, &port);

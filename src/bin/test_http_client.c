@@ -14,7 +14,7 @@ int my_socket_stream() {
         fprintf(stderr, "Could not create socket: %s.\n", strerror(errno));
         exit(1);
     }
-    puts("The socket is opened.");
+    puts("Opend a socket.");
     return socket_desc;
 }
 
@@ -37,7 +37,7 @@ void my_connect_addr_port(int socket_desc, char* addr_str, int port) {
         fprintf(stderr, "Could not connect to %s on port %d: %s.\n", addr_str, port, strerror(errno));
         exit(1);
     }
-    printf("Connected to %s:%d.\n", addr_str, port);
+    printf("Connected to %s on port %d.\n", addr_str, port);
 
 }
 
@@ -50,11 +50,12 @@ void my_shutdown_write(int socket_desc) {
 }
 
 void my_send(int socket_desc, char* data, int data_size) {
+    printf("Sending the data ... ");
     if (write(socket_desc, data, data_size) == -1) {
         fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
         exit(1);
     }
-    puts("Sent data.");
+    puts("Done.");
 }
 
 void my_receive(int socket_desc) {
@@ -62,6 +63,7 @@ void my_receive(int socket_desc) {
     int read_size;
     char buffer[1024];
 
+    puts("Receiving the data ... ");
     puts("--- Data received ---");
     while ((read_size = read(socket_desc, buffer, sizeof buffer))) {
         if (read_size == -1) {
@@ -72,6 +74,7 @@ void my_receive(int socket_desc) {
     }
     if (buffer[read_size-1] != '\n') puts("");
     puts("--- End ---");
+    puts("Done.");
 }
 
 int my_close(int file_desc) {
@@ -80,7 +83,7 @@ int my_close(int file_desc) {
         fprintf(stderr, "Could not close socket: %s.\n", strerror(errno));
         exit(1);
     }
-    puts("The socket is closed.");
+    puts("Closed the socket.");
     return return_val;
 }
 
