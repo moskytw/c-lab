@@ -37,14 +37,14 @@ void my_sockaddr_set_port(struct sockaddr_in* addr_ptr, int port) {
     addr_ptr->sin_port = htons(port);
 }
 
-void my_bind_addr_port_retry(int bind_socket_desc, char* addr_str, int port, int retry_limit) {
+void my_bind_addr_port_retry(int bound_socket_desc, char* addr_str, int port, int retry_limit) {
 
     struct sockaddr_in bind_addr = {0};
     my_sockaddr_set_addr(&bind_addr, addr_str);
     my_sockaddr_set_port(&bind_addr, port);
 
     while (retry_limit--) {
-        if (bind(bind_socket_desc, (struct sockaddr*) &bind_addr, (socklen_t) sizeof bind_addr) == -1) {
+        if (bind(bound_socket_desc, (struct sockaddr*) &bind_addr, (socklen_t) sizeof bind_addr) == -1) {
             if (errno == EADDRINUSE) {
                 printf("The address %s on port %d is in use. Try next port.\n", addr_str, port);
                 port += 1;
@@ -52,7 +52,7 @@ void my_bind_addr_port_retry(int bind_socket_desc, char* addr_str, int port, int
                 continue;
             }
             fprintf(stderr, "Could not find a unused port.\n");
-            my_close(bind_socket_desc);
+            my_close(bound_socket_desc);
             exit(1);
         }
         break;
@@ -61,26 +61,26 @@ void my_bind_addr_port_retry(int bind_socket_desc, char* addr_str, int port, int
 
 }
 
-void my_listen(int bind_socket_desc) {
-    if (listen(bind_socket_desc, 0) == -1) {
+void my_listen(int bound_socket_desc) {
+    if (listen(bound_socket_desc, 0) == -1) {
         fprintf(stderr, "Could not listen: %s.\n", strerror(errno));
-        my_close(bind_socket_desc);
+        my_close(bound_socket_desc);
         exit(1);
     }
     puts("Listening ...");
 }
 
-int my_accept(int bind_socket_desc) {
+int my_accept(int bound_socket_desc) {
     struct sockaddr_in remote_addr = {0};
     socklen_t remote_addr_size = sizeof remote_addr;
-    int accept_socket_desc;
-    if ((accept_socket_desc = accept(bind_socket_desc, (struct sockaddr*) &remote_addr, &remote_addr_size)) == -1) {
+    int remote_socket_desc;
+    if ((remote_socket_desc = accept(bound_socket_desc, (struct sockaddr*) &remote_addr, &remote_addr_size)) == -1) {
         fprintf(stderr, "Could not accept: %s.\n", strerror(errno));
-        my_close(bind_socket_desc);
+        my_close(bound_socket_desc);
         exit(1);
     }
     puts("Accepted a connection as a socket.");
-    return accept_socket_desc;
+    return remote_socket_desc;
 }
 
 void my_send(int socket_desc, char* data, int data_size) {
@@ -113,7 +113,7 @@ void my_receive(int socket_desc) {
 int main(int argc, char* argv[]) {
 
     // Open socket:
-    int bind_socket_desc = my_socket_stream();
+    int bound_socket_desc = my_socket_stream();
 
     // Get the port and addr settings from user:
     int port = 5000;
@@ -122,26 +122,26 @@ int main(int argc, char* argv[]) {
     if (argc >= 3) addr_str = argv[2];
 
     // Bind socket with this address:
-    my_bind_addr_port_retry(bind_socket_desc, addr_str, port, 3);
+    my_bind_addr_port_retry(bound_socket_desc, addr_str, port, 3);
 
     // Listen for a connection from remote:
-    my_listen(bind_socket_desc);
+    my_listen(bound_socket_desc);
 
     // Accept for a connection from remote:
-    int accept_socket_desc = my_accept(bind_socket_desc);
+    int remote_socket_desc = my_accept(bound_socket_desc);
 
     // Receive data from remote:
-    my_receive(accept_socket_desc);
+    my_receive(remote_socket_desc);
 
     // Send data to remote:
     char data[] = "OK";
-    my_send(accept_socket_desc, data, sizeof data);
+    my_send(remote_socket_desc, data, sizeof data);
 
     // Close the sockets:
-    printf("Close accept socket: ");
-    my_close(accept_socket_desc);
-    printf("Close bind socket: ");
-    my_close(bind_socket_desc);
+    printf("Close remote socket: ");
+    my_close(remote_socket_desc);
+    printf("Close bound socket: ");
+    my_close(bound_socket_desc);
 
     exit(0);
 }
