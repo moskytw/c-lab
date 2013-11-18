@@ -1,6 +1,7 @@
 #include <arpa/inet.h> // sockaddr_in
 
 int sockutil_socket_stream();
+int sockutil_socket_datagram();
 void sockutil_sockaddr_set_addr(struct sockaddr_in* addr_ptr, char* addr_str);
 void sockutil_sockaddr_set_port(struct sockaddr_in* addr_ptr, int port);
 void sockutil_bind_addr_port_retry(int bound_socket_desc, char* addr_str, int port, int retry_limit);

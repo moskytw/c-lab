@@ -9,10 +9,20 @@
 int sockutil_socket_stream() {
     int socket_desc = socket(PF_INET, SOCK_STREAM, 0);
     if (socket_desc == -1) {
-        fprintf(stderr, "Could not create socket: %s.\n", strerror(errno));
+        fprintf(stderr, "Could not create stream socket: %s.\n", strerror(errno));
         exit(1);
     }
     puts("Opend a socket.");
+    return socket_desc;
+}
+
+int sockutil_socket_datagram() {
+    int socket_desc = socket(PF_INET, SOCK_DGRAM, 0);
+    if (socket_desc == -1) {
+        fprintf(stderr, "Could not create datagram socket: %s.\n", strerror(errno));
+        exit(1);
+    }
+    puts("The socket is opened.");
     return socket_desc;
 }
 
