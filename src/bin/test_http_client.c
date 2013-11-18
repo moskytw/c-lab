@@ -90,8 +90,10 @@ void my_send(int socket_desc, char* data, int data_size) {
 }
 
 void my_receive(int socket_desc) {
+
     int read_size;
     char buffer[1024];
+
     puts("--- Data received ---");
     while ((read_size = read(socket_desc, buffer, sizeof buffer))) {
         if (read_size == -1) {
@@ -103,6 +105,7 @@ void my_receive(int socket_desc) {
     }
     if (buffer[read_size-1] != '\n') puts("");
     puts("--- End ---");
+
     shutdown(socket_desc, SHUT_RD);
 }
 

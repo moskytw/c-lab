@@ -71,8 +71,10 @@ void my_listen(int bound_socket_desc) {
 }
 
 int my_accept(int bound_socket_desc) {
+
     struct sockaddr_in remote_addr = {0};
     socklen_t remote_addr_size = sizeof remote_addr;
+
     int remote_socket_desc;
     if ((remote_socket_desc = accept(bound_socket_desc, (struct sockaddr*) &remote_addr, &remote_addr_size)) == -1) {
         fprintf(stderr, "Could not accept: %s.\n", strerror(errno));
@@ -80,6 +82,7 @@ int my_accept(int bound_socket_desc) {
         exit(1);
     }
     puts("Accepted a connection as a socket.");
+
     return remote_socket_desc;
 }
 
@@ -94,8 +97,10 @@ void my_send(int socket_desc, char* data, int data_size) {
 }
 
 void my_receive(int socket_desc) {
+
     int read_size;
     char buffer[1024];
+
     puts("--- Data received ---");
     while ((read_size = read(socket_desc, buffer, sizeof buffer))) {
         if (read_size == -1) {
@@ -107,6 +112,7 @@ void my_receive(int socket_desc) {
     }
     if (buffer[read_size-1] != '\n') puts("");
     puts("--- End ---");
+
     shutdown(socket_desc, SHUT_RD);
 }
 
