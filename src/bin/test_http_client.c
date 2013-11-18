@@ -6,6 +6,8 @@
 #include <arpa/inet.h> // sockaddr_in, inet_pton, htons
 #include <unistd.h>    // write, read, exit
 
+// TODO: These util functions should be modularized.
+
 int my_close(int file_desc) {
     int return_val;
     if ((return_val = close(file_desc)) == -1) {

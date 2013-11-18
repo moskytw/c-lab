@@ -6,6 +6,8 @@
 #include <arpa/inet.h> // sockaddr_in, inet_pton, htons
 #include <unistd.h>    // write, read, exit
 
+// TODO: These util functions should be modularized.
+
 int my_close(int file_desc) {
     int return_val;
     if ((return_val = close(file_desc)) == -1) {
@@ -16,27 +18,67 @@ int my_close(int file_desc) {
     return return_val;
 }
 
-int main(int argc, char* argv[]) {
-
-    // Open socket:
-    int bind_socket_desc = socket(PF_INET, SOCK_STREAM, 0);
-    if (bind_socket_desc == -1) {
+int my_socket_stream() {
+    int socket_desc = socket(PF_INET, SOCK_STREAM, 0);
+    if (socket_desc == -1) {
         fprintf(stderr, "Could not create socket: %s.\n", strerror(errno));
         exit(1);
     }
     puts("The socket is opened.");
+    return socket_desc;
+}
 
-    // Set bind address:
-    char* addr_str = "0.0.0.0";
+void my_sockaddr_set_addr(struct sockaddr_in* addr_ptr, char* addr_str) {
+    addr_ptr->sin_family = PF_INET;
+    inet_pton(PF_INET, addr_str, &(addr_ptr->sin_addr));
+}
+
+void my_sockaddr_set_port(struct sockaddr_in* addr_ptr, int port) {
+    addr_ptr->sin_port = htons(port);
+}
+
+void my_send(int socket_desc, char* data, int data_size) {
+    if (write(socket_desc, data, data_size) == -1) {
+        fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
+        my_close(socket_desc);
+        exit(1);
+    }
+    shutdown(socket_desc, SHUT_WR);
+    puts("Sent data.");
+}
+
+void my_receive(int socket_desc) {
+    int read_size;
+    char buffer[1024];
+    puts("--- Data received ---");
+    while ((read_size = read(socket_desc, buffer, sizeof buffer))) {
+        if (read_size == -1) {
+            fprintf(stderr, "Could not read data: %s.\n", strerror(errno));
+            my_close(socket_desc);
+            exit(1);
+        }
+        write(STDOUT_FILENO, buffer, read_size);
+    }
+    if (buffer[read_size-1] != '\n') puts("");
+    puts("--- End ---");
+    shutdown(socket_desc, SHUT_RD);
+}
+
+int main(int argc, char* argv[]) {
+
+    // Open socket:
+    int bind_socket_desc = my_socket_stream();
+
+    // Get the port and addr settings from user:
     int port = 5000;
-    struct sockaddr_in bind_addr = {0};
     if (argc >= 2) port = atoi(argv[1]);
+    char* addr_str = "0.0.0.0";
     if (argc >= 3) addr_str = argv[2];
-    bind_addr.sin_family = PF_INET;
-    inet_pton(PF_INET, addr_str, &(bind_addr.sin_addr));
-    bind_addr.sin_port = htons(port);
 
     // Bind socket with this address:
+    struct sockaddr_in bind_addr = {0};
+    my_sockaddr_set_addr(&bind_addr, addr_str);
+    my_sockaddr_set_port(&bind_addr, port);
     int try_limit = 3;
     while (try_limit--) {
         if (bind(bind_socket_desc, (struct sockaddr*) &bind_addr, (socklen_t) sizeof bind_addr) == -1) {
@@ -74,25 +116,11 @@ int main(int argc, char* argv[]) {
     puts("Accepted a connection as a socket.");
 
     // Receive data from remote:
-    int read_size;
-    char buffer[1024];
-    if ((read_size = read(accept_socket_desc, buffer, sizeof buffer)) == -1) {
-        fprintf(stderr, "Could not read data: %s.\n", strerror(errno));
-        my_close(accept_socket_desc);
-        exit(1);
-    }
-    puts("--- Data received ---");
-    write(STDOUT_FILENO, buffer, read_size);
-    puts("--- End ---");
+    my_receive(accept_socket_desc);
 
     // Send data to remote:
     char data[] = "OK";
-    if (write(accept_socket_desc, data, sizeof data) == -1) {
-        fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
-        my_close(accept_socket_desc);
-        exit(1);
-    }
-    puts("Sent data.");
+    my_send(accept_socket_desc, data, sizeof data);
 
     // Close the sockets:
     printf("Close accept socket: ");
