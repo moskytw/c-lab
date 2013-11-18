@@ -35,6 +35,23 @@ void my_sockaddr_set_port(struct sockaddr_in* addr_ptr, int port) {
     addr_ptr->sin_port = htons(port);
 }
 
+void my_connect_addr_port(int socket_desc, char* addr_str, int port) {
+
+    struct sockaddr_in remote_addr;
+    my_sockaddr_set_addr(&remote_addr, addr_str);
+    my_sockaddr_set_port(&remote_addr, port);
+
+    if (connect(socket_desc, (struct sockaddr*) &remote_addr, sizeof remote_addr) == -1) {
+        fprintf(stderr, "Could not connect to %s on port %d: %s.\n", addr_str, port, strerror(errno));
+        my_close(socket_desc);
+        exit(1);
+    }
+    printf("Connected to %s:%d.\n", addr_str, port);
+
+}
+
+// The my_sockaddr_set_port is easier to use.
+#if 0
 void my_sockaddr_get_addr(struct sockaddr_in* addr_ptr, char* addr_str, int addr_str_size) {
     inet_ntop(PF_INET, &(addr_ptr->sin_addr), addr_str, addr_str_size);
 }
@@ -58,6 +75,7 @@ void my_connect(int socket_desc, struct sockaddr_in* addr_ptr) {
     printf("Connected to %s:%d.\n", addr_str, port);
 
 }
+#endif
 
 void my_send(int socket_desc, char* data, int data_size) {
     if (write(socket_desc, data, data_size) == -1) {
@@ -95,13 +113,8 @@ int main(int argc, char* argv[]) {
     char* addr_str = "127.0.0.1";
     if (argc >= 3) addr_str = argv[2];
 
-    // Set remote address:
-    struct sockaddr_in remote_addr;
-    my_sockaddr_set_port(&remote_addr, port);
-    my_sockaddr_set_addr(&remote_addr, addr_str);
-
     // Connect to remote:
-    my_connect(socket_desc, &remote_addr);
+    my_connect_addr_port(socket_desc, addr_str, port);
 
     // Send data to remote:
     char data[] = "GET / HTTP/1.1\r\n\r\n";
