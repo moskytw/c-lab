@@ -28,10 +28,10 @@ int main(int argc, char* argv[]) {
 
     // Set server (my) address:
     char* addr_str = "0.0.0.0";
-    int port = 80;
+    int port = 5000;
     struct sockaddr_in server_addr = {0};
-    if (argc >= 2) addr_str = argv[1];
-    if (argc >= 3) port = atoi(argv[2]);
+    if (argc >= 2) port = atoi(argv[1]);
+    if (argc >= 3) addr_str = argv[2];
     server_addr.sin_family = PF_INET;
     inet_pton(PF_INET, addr_str, &(server_addr.sin_addr));
     server_addr.sin_port = htons(port);
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
         my_close(socket_desc);
         exit(1);
     }
-    printf("Listening.\n");
+    printf("Listening...\n");
 
     // Accept for a connection from client:
     struct sockaddr_in client_addr = {0};
@@ -63,33 +63,26 @@ int main(int argc, char* argv[]) {
     }
     printf("Accepted a connection.\n");
 
-    while (1) {
-
-        // Receive data from client:
-        puts("--- Data received ---");
-        int read_size;
-        char buffer[1024];
-        while ((read_size = read(accept_desc, buffer, sizeof buffer))) {
-            if (read_size == -1) {
-                fprintf(stderr, "Could not read data: %s.\n", strerror(errno));
-                my_close(accept_desc);
-                exit(1);
-            }
-            write(STDOUT_FILENO, buffer, read_size);
-            if (buffer[0] == '\n' || buffer[0] == '\r') break;
-        }
-        puts("--- End ---");
-
-        // Send data to client:
-        char data[] = "OK\r\n\r\n";
-        if (write(accept_desc, data, sizeof data) == -1) {
-            fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
-            my_close(accept_desc);
-            exit(1);
-        }
-        puts("Sent data.");
-
+    // Receive data from client:
+    int read_size;
+    char buffer[1024];
+    if ((read_size = read(accept_desc, buffer, sizeof buffer)) == -1) {
+        fprintf(stderr, "Could not read data: %s.\n", strerror(errno));
+        my_close(accept_desc);
+        exit(1);
     }
+    puts("--- Data received ---");
+    write(STDOUT_FILENO, buffer, read_size);
+    puts("--- End ---");
+
+    // Send data to client:
+    char data[] = "OK";
+    if (write(accept_desc, data, sizeof data) == -1) {
+        fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
+        my_close(accept_desc);
+        exit(1);
+    }
+    puts("Sent data.");
 
     // Close socket:
     my_close(socket_desc);

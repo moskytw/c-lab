@@ -28,10 +28,10 @@ int main(int argc, char* argv[]) {
 
     // Set server address:
     char* addr_str = "127.0.0.1";
-    int port = 80;
+    int port = 5000;
     struct sockaddr_in server_addr = {0};
-    if (argc >= 2) addr_str = argv[1];
-    if (argc >= 3) port = atoi(argv[2]);
+    if (argc >= 2) port = atoi(argv[1]);
+    if (argc >= 3) addr_str = argv[2];
     server_addr.sin_family = PF_INET;
     inet_pton(PF_INET, addr_str, &(server_addr.sin_addr));
     server_addr.sin_port = htons(port);
@@ -54,9 +54,9 @@ int main(int argc, char* argv[]) {
     puts("Sent data.");
 
     // Receive data from server:
-    puts("--- Data received ---");
     int read_size;
     char buffer[1024];
+    puts("--- Data received ---");
     while ((read_size = read(socket_desc, buffer, sizeof buffer))) {
         if (read_size == -1) {
             fprintf(stderr, "Could not read data: %s.\n", strerror(errno));
@@ -65,7 +65,8 @@ int main(int argc, char* argv[]) {
         }
         write(STDOUT_FILENO, buffer, read_size);
     }
-    puts("\n--- End ---");
+    if (buffer[read_size-1] != '\n') puts("");
+    puts("--- End ---");
 
     // Close socket:
     my_close(socket_desc);
