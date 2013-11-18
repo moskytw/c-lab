@@ -84,7 +84,10 @@ int main(int argc, char* argv[]) {
     }
     puts("Sent data.");
 
-    // Close socket:
+    // Close the sockets:
+    printf("Close accept socket: ");
+    my_close(accept_socket_desc);
+    printf("Close bind socket: ");
     my_close(bind_socket_desc);
 
     exit(0);

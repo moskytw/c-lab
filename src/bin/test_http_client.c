@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
     if (buffer[read_size-1] != '\n') puts("");
     puts("--- End ---");
 
-    // Close socket:
+    // Close the socket:
     my_close(socket_desc);
 
     exit(0);
