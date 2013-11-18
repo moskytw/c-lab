@@ -115,14 +115,14 @@ void my_receive(int socket_desc) {
 
 int main(int argc, char* argv[]) {
 
-    // Open a socket for binding the address:
-    int bound_socket_desc = my_socket_stream();
-
     // Get the port and addr settings:
     int port = 5000;
     if (argc >= 2) port = atoi(argv[1]);
     char* addr_str = "0.0.0.0";
     if (argc >= 3) addr_str = argv[2];
+
+    // Open a socket for binding the address:
+    int bound_socket_desc = my_socket_stream();
 
     // Bind the socket with the address:
     my_bind_addr_port_retry(bound_socket_desc, addr_str, port, 3);

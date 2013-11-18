@@ -117,14 +117,14 @@ void my_receive(int socket_desc) {
 
 int main(int argc, char* argv[]) {
 
-    // Open stream socket for connecting the address:
-    int socket_desc = my_socket_stream();
-
     // Get the port and addr settings:
     int port = 5000;
     if (argc >= 2) port = atoi(argv[1]);
     char* addr_str = "127.0.0.1";
     if (argc >= 3) addr_str = argv[2];
+
+    // Open stream socket for connecting the address:
+    int socket_desc = my_socket_stream();
 
     // Connect the address using the socket:
     my_connect_addr_port(socket_desc, addr_str, port);
