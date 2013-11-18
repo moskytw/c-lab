@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <arpa/inet.h> // sockaddr_in, inet_pton, htons, inet_ntop, ntohs
 #include <stdlib.h>    // exit
-#include <unistd.h>    // write, read
+#include <unistd.h>    // STDOUT_FILENO, write, read
 
 int sockutil_socket_stream() {
     int socket_desc = socket(PF_INET, SOCK_STREAM, 0);
