@@ -58,7 +58,15 @@ void my_listen(int bound_socket_desc) {
     puts("Started to listen.");
 }
 
-int my_accept(int bound_socket_desc) {
+void my_sockaddr_get_addr(struct sockaddr_in* addr_ptr, char* addr_str, int addr_str_size) {
+    inet_ntop(PF_INET, &(addr_ptr->sin_addr), addr_str, addr_str_size);
+}
+
+void my_sockaddr_get_port(struct sockaddr_in* addr_ptr, int* port_ptr) {
+    *port_ptr = ntohs(addr_ptr->sin_port);
+}
+
+int my_accept_addr_port(int bound_socket_desc, char* addr_str, int addr_str_size, int* port_ptr) {
 
     struct sockaddr_in remote_addr = {0};
     socklen_t remote_addr_size = sizeof remote_addr;
@@ -69,6 +77,9 @@ int my_accept(int bound_socket_desc) {
         exit(1);
     }
     puts("Accepted a connection as a socket.");
+
+    my_sockaddr_get_addr(&remote_addr, addr_str, addr_str_size);
+    my_sockaddr_get_port(&remote_addr, port_ptr);
 
     return remote_socket_desc;
 }
@@ -131,7 +142,10 @@ int main(int argc, char* argv[]) {
         puts("\nWaiting for a connection ...");
 
         // Accept for a connection as a socket:
-        int remote_socket_desc = my_accept(bound_socket_desc);
+        char addr_str[INET_ADDRSTRLEN];
+        int port;
+        int remote_socket_desc = my_accept_addr_port(bound_socket_desc, addr_str, sizeof addr_str, &port);
+        printf("The remote address %s port %d is connected.\n", addr_str, port);
 
         // Receive data:
         my_receive(remote_socket_desc);

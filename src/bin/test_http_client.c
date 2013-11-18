@@ -41,32 +41,6 @@ void my_connect_addr_port(int socket_desc, char* addr_str, int port) {
 
 }
 
-// The my_sockaddr_set_port is easier to use.
-#if 0
-void my_sockaddr_get_addr(struct sockaddr_in* addr_ptr, char* addr_str, int addr_str_size) {
-    inet_ntop(PF_INET, &(addr_ptr->sin_addr), addr_str, addr_str_size);
-}
-
-void my_sockaddr_get_port(struct sockaddr_in* addr_ptr, int* port_ptr) {
-    *port_ptr = ntohs(addr_ptr->sin_port);
-}
-
-void my_connect(int socket_desc, struct sockaddr_in* addr_ptr) {
-
-    char addr_str[INET_ADDRSTRLEN];
-    my_sockaddr_get_addr(addr_ptr, addr_str, sizeof addr_str);
-    int port;
-    my_sockaddr_get_port(addr_ptr, &port);
-
-    if (connect(socket_desc, (struct sockaddr*) addr_ptr, sizeof *addr_ptr) == -1) {
-        fprintf(stderr, "Could not connect to %s on port %d: %s.\n", addr_str, port, strerror(errno));
-        exit(1);
-    }
-    printf("Connected to %s:%d.\n", addr_str, port);
-
-}
-#endif
-
 void my_shutdown_write(int socket_desc) {
     if (shutdown(socket_desc, SHUT_WR) == -1) {
         fprintf(stderr, "Could not shut the write channel down: %s.\n", strerror(errno));
