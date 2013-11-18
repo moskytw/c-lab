@@ -37,6 +37,52 @@ void my_sockaddr_set_port(struct sockaddr_in* addr_ptr, int port) {
     addr_ptr->sin_port = htons(port);
 }
 
+void my_bind_addr_port_retry(int bind_socket_desc, char* addr_str, int port, int retry_limit) {
+
+    struct sockaddr_in bind_addr = {0};
+    my_sockaddr_set_addr(&bind_addr, addr_str);
+    my_sockaddr_set_port(&bind_addr, port);
+
+    while (retry_limit--) {
+        if (bind(bind_socket_desc, (struct sockaddr*) &bind_addr, (socklen_t) sizeof bind_addr) == -1) {
+            if (errno == EADDRINUSE) {
+                printf("The address %s on port %d is in use. Try next port.\n", addr_str, port);
+                port += 1;
+                bind_addr.sin_port = htons(port);
+                continue;
+            }
+            fprintf(stderr, "Could not find a unused port.\n");
+            my_close(bind_socket_desc);
+            exit(1);
+        }
+        break;
+    }
+    printf("Bound to %s:%d.\n", addr_str, port);
+
+}
+
+void my_listen(int bind_socket_desc) {
+    if (listen(bind_socket_desc, 0) == -1) {
+        fprintf(stderr, "Could not listen: %s.\n", strerror(errno));
+        my_close(bind_socket_desc);
+        exit(1);
+    }
+    puts("Listening ...");
+}
+
+int my_accept(int bind_socket_desc) {
+    struct sockaddr_in remote_addr = {0};
+    socklen_t remote_addr_size = sizeof remote_addr;
+    int accept_socket_desc;
+    if ((accept_socket_desc = accept(bind_socket_desc, (struct sockaddr*) &remote_addr, &remote_addr_size)) == -1) {
+        fprintf(stderr, "Could not accept: %s.\n", strerror(errno));
+        my_close(bind_socket_desc);
+        exit(1);
+    }
+    puts("Accepted a connection as a socket.");
+    return accept_socket_desc;
+}
+
 void my_send(int socket_desc, char* data, int data_size) {
     if (write(socket_desc, data, data_size) == -1) {
         fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
@@ -76,44 +122,13 @@ int main(int argc, char* argv[]) {
     if (argc >= 3) addr_str = argv[2];
 
     // Bind socket with this address:
-    struct sockaddr_in bind_addr = {0};
-    my_sockaddr_set_addr(&bind_addr, addr_str);
-    my_sockaddr_set_port(&bind_addr, port);
-    int try_limit = 3;
-    while (try_limit--) {
-        if (bind(bind_socket_desc, (struct sockaddr*) &bind_addr, (socklen_t) sizeof bind_addr) == -1) {
-            if (errno == EADDRINUSE) {
-                printf("The address %s on port %d is in use. Try next port.\n", addr_str, port);
-                port += 1;
-                bind_addr.sin_port = htons(port);
-                continue;
-            }
-            fprintf(stderr, "Could not find a unused port.\n");
-            my_close(bind_socket_desc);
-            exit(1);
-        }
-        break;
-    }
-    printf("Bound to %s:%d.\n", addr_str, port);
+    my_bind_addr_port_retry(bind_socket_desc, addr_str, port, 3);
 
     // Listen for a connection from remote:
-    if (listen(bind_socket_desc, 0) == -1) {
-        fprintf(stderr, "Could not listen: %s.\n", strerror(errno));
-        my_close(bind_socket_desc);
-        exit(1);
-    }
-    puts("Listening ...");
+    my_listen(bind_socket_desc);
 
     // Accept for a connection from remote:
-    struct sockaddr_in remote_addr = {0};
-    socklen_t remote_addr_size = sizeof remote_addr;
-    int accept_socket_desc;
-    if ((accept_socket_desc = accept(bind_socket_desc, (struct sockaddr*) &remote_addr, &remote_addr_size)) == -1) {
-        fprintf(stderr, "Could not accept: %s.\n", strerror(errno));
-        my_close(bind_socket_desc);
-        exit(1);
-    }
-    puts("Accepted a connection as a socket.");
+    int accept_socket_desc = my_accept(bind_socket_desc);
 
     // Receive data from remote:
     my_receive(accept_socket_desc);
