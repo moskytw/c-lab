@@ -1,91 +1,5 @@
-#include <sys/socket.h>
-#include <errno.h>     // errno
-#include <string.h>    // strerror
-#include <stdio.h>
-#include <stdlib.h>    // atoi, exit
-#include <arpa/inet.h> // sockaddr_in, inet_pton, htons
-#include <unistd.h>    // write, read
-
-// TODO: These util functions should be modularized.
-
-int my_socket_stream() {
-    int socket_desc = socket(PF_INET, SOCK_STREAM, 0);
-    if (socket_desc == -1) {
-        fprintf(stderr, "Could not create socket: %s.\n", strerror(errno));
-        exit(1);
-    }
-    puts("Opend a socket.");
-    return socket_desc;
-}
-
-void my_sockaddr_set_addr(struct sockaddr_in* addr_ptr, char* addr_str) {
-    addr_ptr->sin_family = PF_INET;
-    inet_pton(PF_INET, addr_str, &(addr_ptr->sin_addr));
-}
-
-void my_sockaddr_set_port(struct sockaddr_in* addr_ptr, int port) {
-    addr_ptr->sin_port = htons(port);
-}
-
-void my_connect_addr_port(int socket_desc, char* addr_str, int port) {
-
-    struct sockaddr_in remote_addr;
-    my_sockaddr_set_addr(&remote_addr, addr_str);
-    my_sockaddr_set_port(&remote_addr, port);
-
-    if (connect(socket_desc, (struct sockaddr*) &remote_addr, sizeof remote_addr) == -1) {
-        fprintf(stderr, "Could not connect to %s on port %d: %s.\n", addr_str, port, strerror(errno));
-        exit(1);
-    }
-    printf("Connected to %s on port %d.\n", addr_str, port);
-
-}
-
-void my_shutdown_write(int socket_desc) {
-    if (shutdown(socket_desc, SHUT_WR) == -1) {
-        fprintf(stderr, "Could not shut the write channel down: %s.\n", strerror(errno));
-        exit(1);
-    }
-    puts("Shut the write channel down.");
-}
-
-void my_send(int socket_desc, char* data, int data_size) {
-    printf("Sending the data ... ");
-    if (write(socket_desc, data, data_size) == -1) {
-        fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
-        exit(1);
-    }
-    puts("Done.");
-}
-
-void my_receive(int socket_desc) {
-
-    int read_size;
-    char buffer[1024];
-
-    puts("Receiving the data ... ");
-    puts("--- Data received ---");
-    while ((read_size = read(socket_desc, buffer, sizeof buffer))) {
-        if (read_size == -1) {
-            fprintf(stderr, "Could not read data: %s.\n", strerror(errno));
-            exit(1);
-        }
-        write(STDOUT_FILENO, buffer, read_size);
-    }
-    if (buffer[read_size-1] != '\n') puts("");
-    puts("--- End ---");
-    puts("Done.");
-}
-
-int my_close(int file_desc) {
-    int return_val;
-    if ((return_val = close(file_desc)) == -1) {
-        fprintf(stderr, "Could not close socket: %s.\n", strerror(errno));
-        exit(1);
-    }
-    puts("Closed the socket.");
-    return return_val;
-}
+#include <stdlib.h> // atoi, exit
+#include "socket_util.h"
 
 int main(int argc, char* argv[]) {
 
@@ -96,23 +10,23 @@ int main(int argc, char* argv[]) {
     if (argc >= 3) addr_str = argv[2];
 
     // Open stream socket for connecting the address:
-    int socket_desc = my_socket_stream();
+    int socket_desc = sockutil_socket_stream();
 
     // Connect the address using the socket:
-    my_connect_addr_port(socket_desc, addr_str, port);
+    sockutil_connect_addr_port(socket_desc, addr_str, port);
 
     // Send data:
     char data[] = "GET / HTTP/1.1\r\n\r\n";
-    my_send(socket_desc, data, sizeof data);
+    sockutil_send(socket_desc, data, sizeof data);
 
     // Tell the remote the data are all sent:
-    my_shutdown_write(socket_desc);
+    sockutil_shutdown_write(socket_desc);
 
     // Receive data:
-    my_receive(socket_desc);
+    sockutil_receive(socket_desc);
 
     // Close the socket:
-    my_close(socket_desc);
+    sockutil_close(socket_desc);
 
     exit(0);
 }

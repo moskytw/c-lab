@@ -1,126 +1,6 @@
-#include <sys/socket.h>
-#include <errno.h>     // errno
-#include <string.h>    // strerror
 #include <stdio.h>
-#include <stdlib.h>    // atoi, exit
-#include <arpa/inet.h> // sockaddr_in, inet_pton, htons
-#include <unistd.h>    // write, read
-
-// TODO: These util functions should be modularized.
-
-int my_socket_stream() {
-    int socket_desc = socket(PF_INET, SOCK_STREAM, 0);
-    if (socket_desc == -1) {
-        fprintf(stderr, "Could not create socket: %s.\n", strerror(errno));
-        exit(1);
-    }
-    puts("Opened a socket.");
-    return socket_desc;
-}
-
-void my_sockaddr_set_addr(struct sockaddr_in* addr_ptr, char* addr_str) {
-    addr_ptr->sin_family = PF_INET;
-    inet_pton(PF_INET, addr_str, &(addr_ptr->sin_addr));
-}
-
-void my_sockaddr_set_port(struct sockaddr_in* addr_ptr, int port) {
-    addr_ptr->sin_port = htons(port);
-}
-
-void my_bind_addr_port_retry(int bound_socket_desc, char* addr_str, int port, int retry_limit) {
-
-    struct sockaddr_in bind_addr = {0};
-    my_sockaddr_set_addr(&bind_addr, addr_str);
-    my_sockaddr_set_port(&bind_addr, port);
-
-    while (retry_limit--) {
-        if (bind(bound_socket_desc, (struct sockaddr*) &bind_addr, (socklen_t) sizeof bind_addr) == -1) {
-            if (errno == EADDRINUSE) {
-                printf("The address %s port %d is in use. Try next port.\n", addr_str, port);
-                port += 1;
-                bind_addr.sin_port = htons(port);
-                continue;
-            }
-            fprintf(stderr, "Could not find a unused port.\n");
-            exit(1);
-        }
-        break;
-    }
-    printf("Bound to %s:%d.\n", addr_str, port);
-
-}
-
-void my_listen(int bound_socket_desc) {
-    if (listen(bound_socket_desc, 0) == -1) {
-        fprintf(stderr, "Could not listen: %s.\n", strerror(errno));
-        exit(1);
-    }
-    puts("Started to listen.");
-}
-
-void my_sockaddr_get_addr(struct sockaddr_in* addr_ptr, char* addr_str, int addr_str_size) {
-    inet_ntop(PF_INET, &(addr_ptr->sin_addr), addr_str, addr_str_size);
-}
-
-void my_sockaddr_get_port(struct sockaddr_in* addr_ptr, int* port_ptr) {
-    *port_ptr = ntohs(addr_ptr->sin_port);
-}
-
-int my_accept_addr_port(int bound_socket_desc, char* addr_str, int addr_str_size, int* port_ptr) {
-
-    struct sockaddr_in remote_addr = {0};
-    socklen_t remote_addr_size = sizeof remote_addr;
-
-    int remote_socket_desc;
-    if ((remote_socket_desc = accept(bound_socket_desc, (struct sockaddr*) &remote_addr, &remote_addr_size)) == -1) {
-        fprintf(stderr, "Could not accept: %s.\n", strerror(errno));
-        exit(1);
-    }
-    puts("Accepted a connection as a new socket.");
-
-    my_sockaddr_get_addr(&remote_addr, addr_str, addr_str_size);
-    my_sockaddr_get_port(&remote_addr, port_ptr);
-
-    return remote_socket_desc;
-}
-
-void my_send(int socket_desc, char* data, int data_size) {
-    printf("Sending the data ... ");
-    if (write(socket_desc, data, data_size) == -1) {
-        fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
-        exit(1);
-    }
-    puts("Done.");
-}
-
-void my_receive(int socket_desc) {
-
-    int read_size;
-    char buffer[1024];
-
-    puts("Receiving the data ... ");
-    puts("--- Data received ---");
-    while ((read_size = read(socket_desc, buffer, sizeof buffer))) {
-        if (read_size == -1) {
-            fprintf(stderr, "Could not read data: %s.\n", strerror(errno));
-            exit(1);
-        }
-        write(STDOUT_FILENO, buffer, read_size);
-    }
-    if (buffer[read_size-1] != '\n') puts("");
-    puts("--- End ---");
-    puts("Done.");
-}
-
-int my_close(int file_desc) {
-    int return_val;
-    if ((return_val = close(file_desc)) == -1) {
-        fprintf(stderr, "Could not close socket: %s.\n", strerror(errno));
-        exit(1);
-    }
-    puts("Closed the socket.");
-    return return_val;
-}
+#include <stdlib.h> // atoi, exit
+#include "socket_util.h"
 
 int main(int argc, char* argv[]) {
 
@@ -131,13 +11,13 @@ int main(int argc, char* argv[]) {
     if (argc >= 3) addr_str = argv[2];
 
     // Open a socket for binding the address:
-    int bound_socket_desc = my_socket_stream();
+    int bound_socket_desc = sockutil_socket_stream();
 
     // Bind the socket with the address:
-    my_bind_addr_port_retry(bound_socket_desc, addr_str, port, 3);
+    sockutil_bind_addr_port_retry(bound_socket_desc, addr_str, port, 3);
 
     // Listen for connection:
-    my_listen(bound_socket_desc);
+    sockutil_listen(bound_socket_desc);
 
     // Be server forever:
     while(1) {
@@ -147,25 +27,25 @@ int main(int argc, char* argv[]) {
         // Accept for a connection as a new socket:
         char addr_str[INET_ADDRSTRLEN];
         int port;
-        int remote_socket_desc = my_accept_addr_port(bound_socket_desc, addr_str, sizeof addr_str, &port);
+        int remote_socket_desc = sockutil_accept_addr_port(bound_socket_desc, addr_str, sizeof addr_str, &port);
         printf("The remote address %s port %d is connected.\n", addr_str, port);
 
         // Receive data:
-        my_receive(remote_socket_desc);
+        sockutil_receive(remote_socket_desc);
         // Once this function returns, the remote closed his write channel.
 
         // Send data:
         char data[] = "OK";
-        my_send(remote_socket_desc, data, sizeof data);
+        sockutil_send(remote_socket_desc, data, sizeof data);
 
         // Close remote socket:
         printf("Closing remote socket: ");
-        my_close(remote_socket_desc);
+        sockutil_close(remote_socket_desc);
     }
 
     // Close bound socket:
     printf("Closing bound socket: ");
-    my_close(bound_socket_desc);
+    sockutil_close(bound_socket_desc);
 
     exit(0);
 }
