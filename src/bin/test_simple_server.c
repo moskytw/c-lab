@@ -37,10 +37,21 @@ int main(int argc, char* argv[]) {
     bind_addr.sin_port = htons(port);
 
     // Bind socket with this address:
-    if (bind(bind_socket_desc, (struct sockaddr*) &bind_addr, (socklen_t) sizeof bind_addr) == -1) {
-        fprintf(stderr, "Could not bind %s on port %d: %s.\n", addr_str, port, strerror(errno));
-        my_close(bind_socket_desc);
-        exit(1);
+    int try_limit = 3;
+    while (try_limit--) {
+        // TODO: Release the port correctly.
+        if (bind(bind_socket_desc, (struct sockaddr*) &bind_addr, (socklen_t) sizeof bind_addr) == -1) {
+            if (errno == EADDRINUSE) {
+                printf("The address %s on port %d is in use. Try next port.\n", addr_str, port);
+                port += 1;
+                bind_addr.sin_port = htons(port);
+                continue;
+            }
+            fprintf(stderr, "Could not find a unused port.\n");
+            my_close(bind_socket_desc);
+            exit(1);
+        }
+        break;
     }
     printf("Bound to %s:%d.\n", addr_str, port);
 
