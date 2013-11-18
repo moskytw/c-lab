@@ -39,7 +39,6 @@ int main(int argc, char* argv[]) {
     // Bind socket with this address:
     int try_limit = 3;
     while (try_limit--) {
-        // TODO: Release the port correctly.
         if (bind(bind_socket_desc, (struct sockaddr*) &bind_addr, (socklen_t) sizeof bind_addr) == -1) {
             if (errno == EADDRINUSE) {
                 printf("The address %s on port %d is in use. Try next port.\n", addr_str, port);
