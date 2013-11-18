@@ -45,3 +45,19 @@ void set_cursor_position(int n, int m) {
 void reset_cursor_position() {
     set_cursor_position(0, 0);
 }
+
+void save_cursor_position() {
+    printf("\x1b[s");
+}
+
+void restore_cursor_position() {
+    printf("\x1b[u");
+}
+
+void hide_cursor() {
+    printf("\x1b[?25l");
+}
+
+void show_cursor() {
+    printf("\x1b[?25h");
+}

@@ -8,3 +8,7 @@ void earse_in_line(int);
 void earse_entire_line();
 void set_cursor_position(int, int);
 void reset_cursor_position();
+void save_cursor_position();
+void restore_cursor_position();
+void hide_cursor();
+void show_cursor();
