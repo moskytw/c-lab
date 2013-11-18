@@ -2,9 +2,9 @@
 #include <errno.h>     // errno
 #include <string.h>    // strerror
 #include <stdio.h>
-#include <stdlib.h>    // atoi
+#include <stdlib.h>    // atoi, exit
 #include <arpa/inet.h> // sockaddr_in, inet_pton, htons
-#include <unistd.h>    // write, read, exit
+#include <unistd.h>    // write, read
 
 // TODO: These util functions should be modularized.
 
