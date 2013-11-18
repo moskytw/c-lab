@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
         my_close(bind_socket_desc);
         exit(1);
     }
-    printf("Listening ...\n");
+    puts("Listening ...");
 
     // Accept for a connection from remote:
     struct sockaddr_in remote_addr = {0};
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
         my_close(bind_socket_desc);
         exit(1);
     }
-    printf("Accepted a connection as a socket.\n");
+    puts("Accepted a connection as a socket.");
 
     // Receive data from remote:
     int read_size;
