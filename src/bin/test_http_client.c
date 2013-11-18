@@ -79,13 +79,21 @@ void my_connect(int socket_desc, struct sockaddr_in* addr_ptr) {
 }
 #endif
 
+void my_shutdown_write(int socket_desc) {
+    if (shutdown(socket_desc, SHUT_WR) == -1) {
+        fprintf(stderr, "Could not shut the write channel down: %s.\n", strerror(errno));
+        my_close(socket_desc);
+        exit(1);
+    }
+    puts("Shut the write channel down.");
+}
+
 void my_send(int socket_desc, char* data, int data_size) {
     if (write(socket_desc, data, data_size) == -1) {
         fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
         my_close(socket_desc);
         exit(1);
     }
-    shutdown(socket_desc, SHUT_WR);
     puts("Sent data.");
 }
 
@@ -105,8 +113,6 @@ void my_receive(int socket_desc) {
     }
     if (buffer[read_size-1] != '\n') puts("");
     puts("--- End ---");
-
-    shutdown(socket_desc, SHUT_RD);
 }
 
 int main(int argc, char* argv[]) {
@@ -126,6 +132,9 @@ int main(int argc, char* argv[]) {
     // Send data to remote:
     char data[] = "GET / HTTP/1.1\r\n\r\n";
     my_send(socket_desc, data, sizeof data);
+
+    // Tell the remote the data are all sent:
+    my_shutdown_write(socket_desc);
 
     // Receive data from remote:
     my_receive(socket_desc);

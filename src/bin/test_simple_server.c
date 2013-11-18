@@ -92,7 +92,6 @@ void my_send(int socket_desc, char* data, int data_size) {
         my_close(socket_desc);
         exit(1);
     }
-    shutdown(socket_desc, SHUT_WR);
     puts("Sent data.");
 }
 
@@ -112,8 +111,6 @@ void my_receive(int socket_desc) {
     }
     if (buffer[read_size-1] != '\n') puts("");
     puts("--- End ---");
-
-    shutdown(socket_desc, SHUT_RD);
 }
 
 int main(int argc, char* argv[]) {
