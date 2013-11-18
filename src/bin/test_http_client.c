@@ -26,25 +26,25 @@ int main(int argc, char* argv[]) {
     }
     puts("The socket is opened.");
 
-    // Set server address:
+    // Set remote address:
     char* addr_str = "127.0.0.1";
     int port = 5000;
-    struct sockaddr_in server_addr = {0};
+    struct sockaddr_in remote_addr = {0};
     if (argc >= 2) port = atoi(argv[1]);
     if (argc >= 3) addr_str = argv[2];
-    server_addr.sin_family = PF_INET;
-    inet_pton(PF_INET, addr_str, &(server_addr.sin_addr));
-    server_addr.sin_port = htons(port);
+    remote_addr.sin_family = PF_INET;
+    inet_pton(PF_INET, addr_str, &(remote_addr.sin_addr));
+    remote_addr.sin_port = htons(port);
 
-    // Connect to server:
-    if (connect(socket_desc, (struct sockaddr*) &server_addr, sizeof server_addr) == -1) {
+    // Connect to remote:
+    if (connect(socket_desc, (struct sockaddr*) &remote_addr, sizeof remote_addr) == -1) {
         fprintf(stderr, "Could not connect to %s on port %d: %s.\n", addr_str, port, strerror(errno));
         my_close(socket_desc);
         exit(1);
     }
     printf("Connected to %s:%d.\n", addr_str, port);
 
-    // Send data to server:
+    // Send data to remote:
     char data[] = "GET / HTTP/1.1\r\n\r\n";
     if (write(socket_desc, data, sizeof data) == -1) {
         fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
     }
     puts("Sent data.");
 
-    // Receive data from server:
+    // Receive data from remote:
     int read_size;
     char buffer[1024];
     puts("--- Data received ---");
