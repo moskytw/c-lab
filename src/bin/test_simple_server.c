@@ -8,16 +8,6 @@
 
 // TODO: These util functions should be modularized.
 
-int my_close(int file_desc) {
-    int return_val;
-    if ((return_val = close(file_desc)) == -1) {
-        fprintf(stderr, "Could not close socket: %s.\n", strerror(errno));
-        exit(1);
-    }
-    puts("The socket is closed.");
-    return return_val;
-}
-
 int my_socket_stream() {
     int socket_desc = socket(PF_INET, SOCK_STREAM, 0);
     if (socket_desc == -1) {
@@ -52,7 +42,6 @@ void my_bind_addr_port_retry(int bound_socket_desc, char* addr_str, int port, in
                 continue;
             }
             fprintf(stderr, "Could not find a unused port.\n");
-            my_close(bound_socket_desc);
             exit(1);
         }
         break;
@@ -64,7 +53,6 @@ void my_bind_addr_port_retry(int bound_socket_desc, char* addr_str, int port, in
 void my_listen(int bound_socket_desc) {
     if (listen(bound_socket_desc, 0) == -1) {
         fprintf(stderr, "Could not listen: %s.\n", strerror(errno));
-        my_close(bound_socket_desc);
         exit(1);
     }
     puts("Listening ...");
@@ -78,7 +66,6 @@ int my_accept(int bound_socket_desc) {
     int remote_socket_desc;
     if ((remote_socket_desc = accept(bound_socket_desc, (struct sockaddr*) &remote_addr, &remote_addr_size)) == -1) {
         fprintf(stderr, "Could not accept: %s.\n", strerror(errno));
-        my_close(bound_socket_desc);
         exit(1);
     }
     puts("Accepted a connection as a socket.");
@@ -89,7 +76,6 @@ int my_accept(int bound_socket_desc) {
 void my_send(int socket_desc, char* data, int data_size) {
     if (write(socket_desc, data, data_size) == -1) {
         fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
-        my_close(socket_desc);
         exit(1);
     }
     puts("Sent data.");
@@ -104,13 +90,22 @@ void my_receive(int socket_desc) {
     while ((read_size = read(socket_desc, buffer, sizeof buffer))) {
         if (read_size == -1) {
             fprintf(stderr, "Could not read data: %s.\n", strerror(errno));
-            my_close(socket_desc);
             exit(1);
         }
         write(STDOUT_FILENO, buffer, read_size);
     }
     if (buffer[read_size-1] != '\n') puts("");
     puts("--- End ---");
+}
+
+int my_close(int file_desc) {
+    int return_val;
+    if ((return_val = close(file_desc)) == -1) {
+        fprintf(stderr, "Could not close socket: %s.\n", strerror(errno));
+        exit(1);
+    }
+    puts("The socket is closed.");
+    return return_val;
 }
 
 int main(int argc, char* argv[]) {
@@ -138,18 +133,19 @@ int main(int argc, char* argv[]) {
 
         // Receive data:
         my_receive(remote_socket_desc);
+        // Once this function returns, the remote closed his write channel.
 
         // Send data:
         char data[] = "OK";
         my_send(remote_socket_desc, data, sizeof data);
 
         // Close remote socket:
-        printf("Close remote socket: ");
+        printf("Closing remote socket: ");
         my_close(remote_socket_desc);
     }
 
     // Close bound socket:
-    printf("Close bound socket: ");
+    printf("Closing bound socket: ");
     my_close(bound_socket_desc);
 
     exit(0);
