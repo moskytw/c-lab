@@ -55,7 +55,7 @@ void my_listen(int bound_socket_desc) {
         fprintf(stderr, "Could not listen: %s.\n", strerror(errno));
         exit(1);
     }
-    puts("Listening ...");
+    puts("Started to listen.");
 }
 
 int my_accept(int bound_socket_desc) {
@@ -127,6 +127,8 @@ int main(int argc, char* argv[]) {
 
     // Be server forever:
     while(1) {
+
+        puts("\nWaiting for a connection ...");
 
         // Accept for a connection as a socket:
         int remote_socket_desc = my_accept(bound_socket_desc);
