@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void debugutil_dump_hex(void* ptr, int size) {
+void debug_util_dump_hex(void* ptr, int size) {
 
     fprintf(stderr, "HEXDUMP: ");
 
