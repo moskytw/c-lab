@@ -1,1 +1,1 @@
-void debug_util_dump_hex(void* ptr, int size);
+void debug_util_hexdump(void* ptr, int size);
