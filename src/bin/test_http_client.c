@@ -10,23 +10,23 @@ int main(int argc, char* argv[]) {
     if (argc >= 3) addr_str = argv[2];
 
     // Open stream socket for connecting the address:
-    int socket_desc = sockutil_socket_stream();
+    int socket_desc = socket_util_socket_stream();
 
     // Connect the address using the socket:
-    sockutil_connect_addr_port(socket_desc, addr_str, port);
+    socket_util_connect_addr_port(socket_desc, addr_str, port);
 
     // Send data:
     char data[] = "GET / HTTP/1.1\r\n\r\n";
-    sockutil_send(socket_desc, data, sizeof data);
+    socket_util_send(socket_desc, data, sizeof data);
 
     // Tell the remote the data are all sent:
-    sockutil_shutdown_write(socket_desc);
+    socket_util_shutdown_write(socket_desc);
 
     // Receive data:
-    sockutil_receive(socket_desc);
+    socket_util_receive(socket_desc);
 
     // Close the socket:
-    sockutil_close(socket_desc);
+    socket_util_close(socket_desc);
 
     exit(0);
 }

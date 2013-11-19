@@ -66,8 +66,8 @@ void* my_receiver() {
 
         char addr_str[INET_ADDRSTRLEN];
         int port;
-        sockutil_sockaddr_get_addr(&remote_addr, addr_str, sizeof addr_str);
-        sockutil_sockaddr_get_port(&remote_addr, &port);
+        socket_util_sockaddr_get_addr(&remote_addr, addr_str, sizeof addr_str);
+        socket_util_sockaddr_get_port(&remote_addr, &port);
 
         printf("[%s:%d] ", addr_str, port);
         fflush(stdout);
@@ -87,10 +87,10 @@ int main(int argc, char* argv[]) {
     if (argc >= 3) addr_str = argv[2];
 
     // Open a socket for binding the address:
-    bound_socket_desc = sockutil_socket_datagram();
+    bound_socket_desc = socket_util_socket_datagram();
 
     // Bind the socket with the address:
-    sockutil_bind_addr_port_retry(bound_socket_desc, addr_str, port, 3);
+    socket_util_bind_addr_port_retry(bound_socket_desc, addr_str, port, 3);
 
     // Create thread to receive data in background:
     pthread_t my_receiver_thread;
@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
 
     // Close bound socket:
     printf("Closing bound socket: ");
-    sockutil_close(bound_socket_desc);
+    socket_util_close(bound_socket_desc);
 
     exit(0);
 }
