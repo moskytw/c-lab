@@ -20,7 +20,7 @@ void my_broadcast_addr_ptrs_add(struct sockaddr_in* addr_ptr) {
 
         // do noting if this addr is existent
         if (broadcast_addr_ptrs[i] != NULL &&
-            (!memcmp(broadcast_addr_ptrs[i], addr_ptr, sizeof (struct sockaddr_in)))) {
+            !memcmp(broadcast_addr_ptrs[i], addr_ptr, sizeof (struct sockaddr_in))) {
             return;
         }
 
