@@ -48,7 +48,7 @@ void my_broadcast_addr_ptrs_erase(int i) {
     broadcast_addr_ptrs[i] = NULL;
 }
 
-int bound_socket_desc;
+int bind_socket_desc;
 
 void* my_receiver() {
 
@@ -57,7 +57,7 @@ void* my_receiver() {
     struct sockaddr_in remote_addr = {0};
     int remote_addr_size = sizeof remote_addr;
 
-    while ((read_size = recvfrom(bound_socket_desc, buffer, sizeof buffer, 0, (struct sockaddr*) &remote_addr, (socklen_t*) &remote_addr_size))) {
+    while ((read_size = recvfrom(bind_socket_desc, buffer, sizeof buffer, 0, (struct sockaddr*) &remote_addr, (socklen_t*) &remote_addr_size))) {
 
         if (read_size == -1) {
             fprintf(stderr, "Could not read data: %s.\n", strerror(errno));
@@ -68,14 +68,14 @@ void* my_receiver() {
         my_broadcast_addr_ptrs_add(&remote_addr);
         pthread_mutex_unlock(&broadcast_addr_ptrs_mutex);
 
-        char addr_str[INET_ADDRSTRLEN];
-        int port;
-        socket_util_sockaddr_get_addr(&remote_addr, addr_str, sizeof addr_str);
-        socket_util_sockaddr_get_port(&remote_addr, &port);
+        char remote_addr_str[INET_ADDRSTRLEN];
+        int remote_port;
+        socket_util_sockaddr_get_addr(&remote_addr, remote_addr_str, sizeof remote_addr_str);
+        socket_util_sockaddr_get_port(&remote_addr, &remote_port);
 
         // TODO: This message should be sent to all broadcast addrs except this
         // remote.
-        printf("[%s:%d] ", addr_str, port);
+        printf("[%s:%d] ", remote_addr_str, remote_port);
         fflush(stdout);
         write(STDOUT_FILENO, buffer, read_size);
 
@@ -87,16 +87,16 @@ void* my_receiver() {
 int main(int argc, char* argv[]) {
 
     // Get the port and addr settings:
-    int port = 5000;
-    if (argc >= 2) port = atoi(argv[1]);
-    char* addr_str = "0.0.0.0";
-    if (argc >= 3) addr_str = argv[2];
+    int bind_port = 5000;
+    if (argc >= 2) bind_port = atoi(argv[1]);
+    char* bind_addr_str_ptr = "0.0.0.0";
+    if (argc >= 3) bind_addr_str_ptr = argv[2];
 
     // Open a socket for binding the address:
-    bound_socket_desc = socket_util_socket_datagram();
+    bind_socket_desc = socket_util_socket_datagram();
 
     // Bind the socket with the address:
-    socket_util_bind_addr_port_retry(bound_socket_desc, addr_str, port, 3);
+    socket_util_bind_addr_port_retry(bind_socket_desc, bind_addr_str_ptr, bind_port, 3);
 
     // Create thread to receive data in background:
     pthread_t my_receiver_thread;
@@ -115,9 +115,9 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // Close bound socket:
-    printf("Closing bound socket: ");
-    socket_util_close(bound_socket_desc);
+    // Close bind socket:
+    printf("Closing bind socket: ");
+    socket_util_close(bind_socket_desc);
 
     exit(0);
 }

@@ -4,16 +4,16 @@
 int main(int argc, char* argv[]) {
 
     // Get the port and addr settings:
-    int port = 5000;
-    if (argc >= 2) port = atoi(argv[1]);
-    char* addr_str = "127.0.0.1";
-    if (argc >= 3) addr_str = argv[2];
+    int remote_port = 5000;
+    if (argc >= 2) remote_port = atoi(argv[1]);
+    char* remote_addr_str_ptr = "127.0.0.1";
+    if (argc >= 3) remote_addr_str_ptr = argv[2];
 
     // Open stream socket for connecting the address:
     int socket_desc = socket_util_socket_stream();
 
     // Connect the address using the socket:
-    socket_util_connect_addr_port(socket_desc, addr_str, port);
+    socket_util_connect_addr_port(socket_desc, remote_addr_str_ptr, remote_port);
 
     // Send data:
     char data[] = "GET / HTTP/1.1\r\n\r\n";
