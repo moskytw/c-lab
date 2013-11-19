@@ -27,9 +27,9 @@ int main(int argc, char* argv[]) {
     }
 
     puts("It is annoying, right? Press 'y' to exit.");
-    termios_disable_canonical_echo();
+    termios_util_disable_canonical_echo();
     while (getchar() != 'y');
-    termios_restore();
+    termios_util_restore();
 
     pthread_cancel(infinitely_repeater_thread);
 

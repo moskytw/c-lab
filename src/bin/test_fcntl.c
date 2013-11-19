@@ -15,13 +15,13 @@ int main(int argc, char* argv[]) {
 
     puts("It is annoying, right? Press 'y' to exit.");
 
-    termios_disable_canonical_echo();
+    termios_util_disable_canonical_echo();
     while (getchar() != 'y') {
         puts("Hi, there!");
         // It always needs to sleep 0.5s.
         usleep(500000); // 0.5s
     }
-    termios_restore();
+    termios_util_restore();
 
     puts("Exit!");
 

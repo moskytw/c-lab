@@ -24,13 +24,13 @@ int main(int argc, char* argv[]) {
     // make process don't ignore it
     signal(SIGIO, my_null_handler);
 
-    termios_disable_canonical_echo();
+    termios_util_disable_canonical_echo();
     while (getchar() != 'y') {
         puts("Hi, there!");
         // process will wake up when we get the signal
         usleep(500000); // 0.5s
     }
-    termios_restore();
+    termios_util_restore();
 
     puts("Exit!");
 

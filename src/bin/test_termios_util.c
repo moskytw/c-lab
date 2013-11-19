@@ -5,9 +5,9 @@ int main(int argc, char* argv[]) {
 
     puts("Press 'e' to leave.");
 
-    termios_disable_canonical_echo();
+    termios_util_disable_canonical_echo();
     while (getchar() != 'e');
-    termios_restore();
+    termios_util_restore();
 
     puts("Exit!");
 
