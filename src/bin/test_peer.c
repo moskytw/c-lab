@@ -8,6 +8,8 @@
 #include <string.h>    // strerror
 #include <unistd.h>    // STDOUT_FILENO, write, read
 
+// TODO: Define the control message.
+
 struct sockaddr_in* broadcast_addr_ptrs[10] = {0};
 pthread_mutex_t broadcast_addr_ptrs_mutex;
 
@@ -16,9 +18,11 @@ void my_broadcast_addr_ptrs_add(struct sockaddr_in* addr_ptr) {
     int i;
     int empty_idx = -1;
 
+    // TODO: the 10 shouldn't be hard coded here.
     for (i = 0; i < 10; i++) {
 
         // do noting if this addr is existent
+        // TODO: Use binary tree or hash table to do it.
         if (broadcast_addr_ptrs[i] != NULL &&
             !memcmp(broadcast_addr_ptrs[i], addr_ptr, sizeof (struct sockaddr_in))) {
             return;
@@ -69,6 +73,8 @@ void* my_receiver() {
         socket_util_sockaddr_get_addr(&remote_addr, addr_str, sizeof addr_str);
         socket_util_sockaddr_get_port(&remote_addr, &port);
 
+        // TODO: This message should be sent to all broadcast addrs except this
+        // remote.
         printf("[%s:%d] ", addr_str, port);
         fflush(stdout);
         write(STDOUT_FILENO, buffer, read_size);
@@ -103,6 +109,7 @@ int main(int argc, char* argv[]) {
     while (1) {
         char buffer[1024];
         fgets(buffer, sizeof buffer, stdin);
+        // TODO: send message to all broadcast addrs
         if (!strncmp(buffer, "exit", 4)) {
             exit(0);
         }
