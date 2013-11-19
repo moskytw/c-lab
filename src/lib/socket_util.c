@@ -39,7 +39,7 @@ void socket_util_sockaddr_set_port(struct sockaddr_in* addr_ptr, int port) {
     addr_ptr->sin_port = htons(port);
 }
 
-void socket_util_bind_addr_port_retry(int bind_socket_desc, char* bind_addr_str_ptr, int bind_port, int retry_limit) {
+int socket_util_bind_addr_port_retry(int bind_socket_desc, char* bind_addr_str_ptr, int bind_port, int retry_limit) {
 
     struct sockaddr_in bind_addr = {0};
     socket_util_sockaddr_set_addr(&bind_addr, bind_addr_str_ptr);
@@ -63,6 +63,7 @@ void socket_util_bind_addr_port_retry(int bind_socket_desc, char* bind_addr_str_
     }
     printf("Bound to %s:%d.\n", bind_addr_str_ptr, bind_port);
 
+    return bind_port;
 }
 
 void socket_util_listen(int bind_socket_desc) {
