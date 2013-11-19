@@ -131,6 +131,13 @@ void socket_util_send(int socket_desc, char* data_ptr, int data_size) {
     puts("Done.");
 }
 
+void socket_util_sendto(int socket_desc, struct sockaddr_in* remote_addr_ptr, char* data_ptr, int data_size) {
+    if (sendto(socket_desc, data_ptr, data_size, 0, (struct sockaddr*) remote_addr_ptr, sizeof *remote_addr_ptr) == -1) {
+        fprintf(stderr, "Could not send data: %s.\n", strerror(errno));
+        exit(1);
+    }
+}
+
 void socket_util_receive(int socket_desc) {
 
     int read_size;
