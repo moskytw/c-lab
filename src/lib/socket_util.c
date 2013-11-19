@@ -61,7 +61,7 @@ void socket_util_bind_addr_port_retry(int bind_socket_desc, char* bind_addr_str_
         }
         break;
     }
-    printf("bind to %s:%d.\n", bind_addr_str_ptr, bind_port);
+    printf("Bound to %s:%d.\n", bind_addr_str_ptr, bind_port);
 
 }
 
