@@ -10,7 +10,8 @@
 
 // TODO: Define the control message.
 
-struct sockaddr_in* broadcast_addr_ptrs[10] = {0};
+const int broadcast_addr_ptrs_size = 10;
+struct sockaddr_in* broadcast_addr_ptrs[broadcast_addr_ptrs_size] = {0};
 pthread_mutex_t broadcast_addr_ptrs_mutex;
 
 void my_broadcast_addr_ptrs_add(struct sockaddr_in* remote_addr_ptr) {
@@ -18,8 +19,7 @@ void my_broadcast_addr_ptrs_add(struct sockaddr_in* remote_addr_ptr) {
     int i;
     int empty_idx = -1;
 
-    // TODO: the 10 shouldn't be hard coded here.
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < broadcast_addr_ptrs_size; i++) {
 
         // do noting if this addr is existent
         // TODO: Use binary tree or hash table to do it.
