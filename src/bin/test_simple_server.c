@@ -14,7 +14,9 @@ int main(int argc, char* argv[]) {
     int bind_socket_desc = socket_util_socket_stream();
 
     // Bind the socket with the address:
-    socket_util_bind_addr_port_retry(bind_socket_desc, bind_addr_str_ptr, bind_port, 3);
+    socket_util_bind_addr_port_retry(
+        bind_socket_desc, bind_addr_str_ptr, bind_port, 3
+    );
 
     // Listen for connection:
     socket_util_listen(bind_socket_desc);
@@ -27,8 +29,13 @@ int main(int argc, char* argv[]) {
         // Accept for a connection as a new socket:
         char remote_addr_str[INET_ADDRSTRLEN];
         int remote_port;
-        int remote_socket_desc = socket_util_accept_addr_port(bind_socket_desc, remote_addr_str, sizeof remote_addr_str, &remote_port);
-        printf("The remote address %s port %d is connected.\n", remote_addr_str, remote_port);
+        int remote_socket_desc = socket_util_accept_addr_port(
+            bind_socket_desc,
+            remote_addr_str, sizeof remote_addr_str, &remote_port
+        );
+        printf("The remote address %s port %d is connected.\n",
+            remote_addr_str, remote_port
+        );
 
         // Receive data:
         socket_util_receive(remote_socket_desc);

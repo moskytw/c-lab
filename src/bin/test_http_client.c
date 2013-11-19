@@ -13,7 +13,9 @@ int main(int argc, char* argv[]) {
     int remote_socket_desc = socket_util_socket_stream();
 
     // Connect the address using the socket:
-    socket_util_connect_addr_port(remote_socket_desc, remote_addr_str_ptr, remote_port);
+    socket_util_connect_addr_port(
+        remote_socket_desc, remote_addr_str_ptr, remote_port
+    );
 
     // Send data:
     char data[] = "GET / HTTP/1.1\r\n\r\n";

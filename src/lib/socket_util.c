@@ -9,7 +9,9 @@
 int socket_util_socket_stream() {
     int socket_desc = socket(PF_INET, SOCK_STREAM, 0);
     if (socket_desc == -1) {
-        fprintf(stderr, "Could not create stream socket: %s.\n", strerror(errno));
+        fprintf(stderr, "Could not create stream socket: %s.\n",
+            strerror(errno)
+        );
         exit(1);
     }
     puts("Opend a socket.");
@@ -19,7 +21,9 @@ int socket_util_socket_stream() {
 int socket_util_socket_datagram() {
     int socket_desc = socket(PF_INET, SOCK_DGRAM, 0);
     if (socket_desc == -1) {
-        fprintf(stderr, "Could not create datagram socket: %s.\n", strerror(errno));
+        fprintf(stderr, "Could not create datagram socket: %s.\n",
+            strerror(errno)
+        );
         exit(1);
     }
     puts("The socket is opened.");
@@ -42,9 +46,12 @@ void socket_util_bind_addr_port_retry(int bind_socket_desc, char* bind_addr_str_
     socket_util_sockaddr_set_port(&bind_addr, bind_port);
 
     while (retry_limit--) {
+
         if (bind(bind_socket_desc, (struct sockaddr*) &bind_addr, (socklen_t) sizeof bind_addr) == -1) {
             if (errno == EADDRINUSE) {
-                printf("The address %s port %d is in use. Try next port.\n", bind_addr_str_ptr, bind_port);
+                printf("The address %s port %d is in use. Try next port.\n",
+                    bind_addr_str_ptr, bind_port
+                );
                 bind_port += 1;
                 bind_addr.sin_port = htons(bind_port);
                 continue;
