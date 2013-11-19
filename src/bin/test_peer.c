@@ -36,9 +36,8 @@ void my_broadcast_addr_ptrs_add(struct sockaddr_in* remote_addr_ptr) {
     }
 
     if (empty_idx != -1) {
-        struct sockaddr_in* heap_remote_addr_ptr = malloc(sizeof (struct sockaddr_in));
-        *heap_remote_addr_ptr = *remote_addr_ptr;
-        broadcast_addr_ptrs[empty_idx] = heap_remote_addr_ptr;
+        broadcast_addr_ptrs[empty_idx] = malloc(sizeof (struct sockaddr_in));
+        *broadcast_addr_ptrs[empty_idx] = *remote_addr_ptr;
         puts("It is a new remote!");
     }
 }
