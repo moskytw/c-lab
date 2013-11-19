@@ -142,12 +142,10 @@ void socket_util_receive(int socket_desc) {
     puts("Done.");
 }
 
-int socket_util_close(int file_desc) {
-    int return_val;
-    if ((return_val = close(file_desc)) == -1) {
+void socket_util_close(int file_desc) {
+    if (close(file_desc) == -1) {
         fprintf(stderr, "Could not close socket: %s.\n", strerror(errno));
         exit(1);
     }
     puts("Closed the socket.");
-    return return_val;
 }

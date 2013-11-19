@@ -13,4 +13,4 @@ void socket_util_connect_addr_port(int socket_desc, char* remote_addr_str_ptr, i
 void socket_util_shutdown_write(int socket_desc);
 void socket_util_send(int socket_desc, char* data_ptr, int data_size);
 void socket_util_receive(int socket_desc);
-int socket_util_close(int file_desc);
+void socket_util_close(int file_desc);
