@@ -13,7 +13,7 @@
 struct sockaddr_in* broadcast_addr_ptrs[10] = {0};
 pthread_mutex_t broadcast_addr_ptrs_mutex;
 
-void my_broadcast_addr_ptrs_add(struct sockaddr_in* addr_ptr) {
+void my_broadcast_addr_ptrs_add(struct sockaddr_in* remote_addr_ptr) {
 
     int i;
     int empty_idx = -1;
@@ -24,7 +24,7 @@ void my_broadcast_addr_ptrs_add(struct sockaddr_in* addr_ptr) {
         // do noting if this addr is existent
         // TODO: Use binary tree or hash table to do it.
         if (broadcast_addr_ptrs[i] != NULL &&
-            !memcmp(broadcast_addr_ptrs[i], addr_ptr, sizeof (struct sockaddr_in))) {
+            !memcmp(broadcast_addr_ptrs[i], remote_addr_ptr, sizeof (struct sockaddr_in))) {
             return;
         }
 
@@ -36,9 +36,9 @@ void my_broadcast_addr_ptrs_add(struct sockaddr_in* addr_ptr) {
     }
 
     if (empty_idx != -1) {
-        struct sockaddr_in* new_addr_ptr = malloc(sizeof (struct sockaddr_in));
-        *new_addr_ptr = *addr_ptr;
-        broadcast_addr_ptrs[empty_idx] = new_addr_ptr;
+        struct sockaddr_in* heap_remote_addr_ptr = malloc(sizeof (struct sockaddr_in));
+        *heap_remote_addr_ptr = *remote_addr_ptr;
+        broadcast_addr_ptrs[empty_idx] = heap_remote_addr_ptr;
         puts("It is a new remote!");
     }
 }
