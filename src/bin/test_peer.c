@@ -40,39 +40,57 @@ void my_sockaddr_get(struct sockaddr* addr_ptr, char* addr_str_ptr, int addr_str
     }
 }
 
-const int broadcast_addr_ptrs_size = 10;
-struct sockaddr* broadcast_addr_ptrs[broadcast_addr_ptrs_size] = {0};
-int broadcast_addr_ptrs_empty_idx = 0;
-pthread_mutex_t broadcast_addr_ptrs_mutex;
+#define LEN(arr) (sizeof arr / sizeof arr[0])
 
-void my_broadcast_addr_ptrs_add(struct sockaddr* remote_addr_ptr) {
+struct sockaddr* my_broadcast_addr_ptrs[10] = {0};
 
-    pthread_mutex_lock(&broadcast_addr_ptrs_mutex);
+int my_broadcast_addr_ptrs_add(struct sockaddr* new_addr_ptr) {
 
-    if (broadcast_addr_ptrs_empty_idx >= broadcast_addr_ptrs_size) return;
-
+    // Check the new addr is existent or not,
+    // and save the index of empty position.
+    int first_empty_idx = -1;
     int i;
-    for (i = 0; i < broadcast_addr_ptrs_size; i++) {
-        // do noting if this addr is existent
-        if (broadcast_addr_ptrs[i] != NULL &&
-            !memcmp(broadcast_addr_ptrs[i], remote_addr_ptr, sizeof *remote_addr_ptr)) {
-            return;
+    for (i = 0; i < LEN(my_broadcast_addr_ptrs); i++) {
+        if (my_broadcast_addr_ptrs[i] == NULL) {
+            if (first_empty_idx == -1) first_empty_idx = i;
+            continue;
         }
+        // Return immediately if find a same addr.
+        if (!memcmp(my_broadcast_addr_ptrs[i], new_addr_ptr, sizeof *new_addr_ptr)) return i;
     }
+    // Return without saving new addr if can't find an empty position.
+    if (first_empty_idx == -1) return -1;
 
-    broadcast_addr_ptrs[broadcast_addr_ptrs_empty_idx] = malloc(sizeof *remote_addr_ptr);
-    *broadcast_addr_ptrs[broadcast_addr_ptrs_empty_idx++] = *remote_addr_ptr;
+    // Save the new addr.
+    my_broadcast_addr_ptrs[first_empty_idx] = (struct sockaddr*) malloc(sizeof new_addr_ptr);
+    *my_broadcast_addr_ptrs[first_empty_idx] = *new_addr_ptr;
     puts("A new peer is added to list!");
+    return first_empty_idx;
+}
 
-    pthread_mutex_unlock(&broadcast_addr_ptrs_mutex);
+int my_broadcast_addr_ptrs_find(struct sockaddr* addr_ptr) {
+    int i;
+    for (i = 0; i < LEN(my_broadcast_addr_ptrs); i++) {
+        if (my_broadcast_addr_ptrs[i] == NULL) continue;
+        if (!memcmp(my_broadcast_addr_ptrs[i], addr_ptr, sizeof *addr_ptr)) return i;
+    }
+    return -1;
+}
+
+int my_broadcast_addr_ptrs_remove(struct sockaddr* addr_ptr) {
+    int idx = my_broadcast_addr_ptrs_find(addr_ptr);
+    if (idx == -1) return -1;
+    free(my_broadcast_addr_ptrs[idx]);
+    my_broadcast_addr_ptrs[idx] = NULL;
+    return idx;
 }
 
 void my_broadcast_except(int bind_socket_desc, char* data_ptr, int data_size, struct sockaddr* excepted_addr_ptr) {
     int i;
-    for (i = 0; i < broadcast_addr_ptrs_size; i++) {
-        if (broadcast_addr_ptrs[i] == NULL) continue;
-        if (excepted_addr_ptr != NULL && !memcmp(broadcast_addr_ptrs[i], excepted_addr_ptr, sizeof *excepted_addr_ptr)) continue;
-        sendto(bind_socket_desc, data_ptr, data_size, 0, broadcast_addr_ptrs[i], sizeof *broadcast_addr_ptrs[i]);
+    for (i = 0; i < LEN(my_broadcast_addr_ptrs); i++) {
+        if (my_broadcast_addr_ptrs[i] == NULL) continue;
+        if (excepted_addr_ptr != NULL && !memcmp(my_broadcast_addr_ptrs[i], excepted_addr_ptr, sizeof *excepted_addr_ptr)) continue;
+        sendto(bind_socket_desc, data_ptr, data_size, 0, my_broadcast_addr_ptrs[i], sizeof *my_broadcast_addr_ptrs[i]);
     }
 }
 
