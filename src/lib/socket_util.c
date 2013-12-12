@@ -155,7 +155,7 @@ void socket_util_receive(int socket_desc) {
             exit(1);
         }
     }
-    if (buffer[read_size-1] != '\n') puts("");
+    if (read_size >= 1 && buffer[read_size-1] != '\n') puts("");
     puts("--- End ---");
     puts("Done.");
 }
