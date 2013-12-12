@@ -110,10 +110,15 @@ int main(int argc, char* argv[]) {
     socket_util_sockaddr_set_port(&remote_addr, (bind_port == 5000) ? 5001 : 5000);
     socket_util_sendto(bind_socket_desc, &remote_addr, HI, sizeof HI);
 
+
     // Accept message from user:
+    char buffer[1024];
     while (1) {
-        char buffer[1024];
-        fgets(buffer, sizeof buffer, stdin);
+        char* buffer_ptr = fgets(buffer, sizeof buffer, stdin);
+        if (buffer_ptr == NULL) {
+            fprintf(stderr, "Could not read stdin: %s\n", strerror(errno));
+            exit(1);
+        }
         my_broadcast_except(bind_socket_desc, buffer, strlen(buffer), NULL);
     }
 
