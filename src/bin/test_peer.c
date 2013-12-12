@@ -8,7 +8,8 @@
 #include <string.h>    // strerror
 #include <unistd.h>    // STDOUT_FILENO, write, read
 
-const int broadcast_addr_ptrs_size = 10;
+#define broadcast_addr_ptrs_size 10
+
 struct sockaddr_in* broadcast_addr_ptrs[broadcast_addr_ptrs_size] = {0};
 int broadcast_addr_ptrs_empty_idx = 0;
 pthread_mutex_t broadcast_addr_ptrs_mutex;
