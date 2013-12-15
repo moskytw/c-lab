@@ -81,6 +81,7 @@ void* my_on_event(struct inotify_event* event_ptr) {
     puts("");
 
     return NULL;
+
 }
 
 int main(int argc, char* argv[]) {
