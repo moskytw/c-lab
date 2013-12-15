@@ -10,9 +10,9 @@
 #define BUFFER_SIZE (INOTIFY_EVENT_BASE_SIZE+PATH_MAX)
 
 struct listener {
-    int inotify_desc;
+    int       inotify_desc;
     pthread_t listener_thread;
-    void* (*on_event) (struct inotify_event*);
+    void*     (*on_event) (struct inotify_event*);
 };
 
 void* listener_listener(void* listener_void_ptr) {
