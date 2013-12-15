@@ -9,15 +9,15 @@
 #define INOTIFY_EVENT_BASE_SIZE (sizeof (struct inotify_event))
 #define BUFFER_SIZE (INOTIFY_EVENT_BASE_SIZE+PATH_MAX)
 
-struct listener {
+typedef struct listener {
     int       inotify_desc;
     pthread_t listener_thread;
     void*     (*on_event) (struct inotify_event*);
-};
+} listener_t;
 
 void* listener_listener(void* listener_void_ptr) {
 
-    struct listener* listener_ptr = (struct listener*) listener_void_ptr;
+    listener_t* listener_ptr = (listener_t*) listener_void_ptr;
 
     while (1) {
 
@@ -35,7 +35,7 @@ void* listener_listener(void* listener_void_ptr) {
 
 }
 
-int listener_init(struct listener* listener_ptr) {
+int listener_init(listener_t* listener_ptr) {
 
     int inotify_desc = inotify_init();
     if (inotify_desc == -1) {
@@ -54,7 +54,7 @@ int listener_init(struct listener* listener_ptr) {
 
 }
 
-int listener_close(struct listener* listener_ptr) {
+int listener_close(listener_t* listener_ptr) {
     // NOTE: It can't destory the watch descriptors.
     int return_val = 0;
     return_val = close(listener_ptr->inotify_desc);
@@ -62,12 +62,12 @@ int listener_close(struct listener* listener_ptr) {
     return return_val;
 }
 
-int listener_add_watch(struct listener* listener_ptr, const char* pathname, uint32_t mask) {
+int listener_add_watch(listener_t* listener_ptr, const char* pathname, uint32_t mask) {
     // If need, you must close watch descriptors it results by youself.
     return inotify_add_watch(listener_ptr->inotify_desc, pathname, mask);
 }
 
-int listener_rm_watch(struct listener* listener_ptr, int watch_desc) {
+int listener_rm_watch(listener_t* listener_ptr, int watch_desc) {
     return inotify_rm_watch(listener_ptr->inotify_desc, watch_desc);
 }
 
@@ -86,7 +86,7 @@ void* my_on_event(struct inotify_event* event_ptr) {
 
 int main(int argc, char* argv[]) {
 
-    struct listener listener = {0};
+    listener_t listener = {0};
     listener.on_event = &my_on_event;
 
     if (listener_init(&listener) == -1) {
