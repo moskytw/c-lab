@@ -30,7 +30,7 @@ void* listener_listener(void* listener_void_ptr) {
         listener_ptr->on_event((struct inotify_event*) buffer);
     }
 
-    // actually it will listen forever and never go here
+    // Actually it will listen forever and never go here.
     pthread_exit((void*) 0);
 
 }
@@ -55,7 +55,7 @@ int listener_init(listener_t* listener_ptr) {
 }
 
 int listener_close(listener_t* listener_ptr) {
-    // NOTE: It can't destory the watch descriptors.
+    // NOTE: It can't close the watch descriptors.
     int return_val = 0;
     return_val = close(listener_ptr->inotify_desc);
     return_val = pthread_cancel(listener_ptr->listener_thread);
@@ -63,7 +63,7 @@ int listener_close(listener_t* listener_ptr) {
 }
 
 int listener_add_watch(listener_t* listener_ptr, const char* pathname, uint32_t mask) {
-    // If need, you must close watch descriptors it results by youself.
+    // If need, you must close the watch descriptor it returns by youself.
     return inotify_add_watch(listener_ptr->inotify_desc, pathname, mask);
 }
 
