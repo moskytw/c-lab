@@ -7,6 +7,8 @@
 #include <string.h>    // strerror
 #include <unistd.h>    // STDOUT_FILENO, write, read
 
+#define LEN(arr) (sizeof arr / sizeof arr[0])
+
 void my_exit_if_errno(char* message_tmpl) {
     if (errno == 0) return;
     fprintf(stderr, message_tmpl, strerror(errno));
@@ -40,7 +42,11 @@ void my_sockaddr_get(struct sockaddr* addr_ptr, char* addr_str_ptr, int addr_str
     }
 }
 
-#define LEN(arr) (sizeof arr / sizeof arr[0])
+#define broadcast_addr_ptrs_size 10
+
+struct sockaddr_in* broadcast_addr_ptrs[broadcast_addr_ptrs_size] = {0};
+int broadcast_addr_ptrs_empty_idx = 0;
+pthread_mutex_t broadcast_addr_ptrs_mutex;
 
 struct sockaddr* my_broadcast_addr_ptrs[10] = {0};
 
@@ -176,10 +182,15 @@ int main(int argc, char* argv[]) {
     my_sockaddr_set(&remote_addr, "127.0.0.1", (bind_port == 5000) ? 5001 : 5000);
     sendto(bind_socket_desc, HI, sizeof HI, 0, &remote_addr, sizeof remote_addr);
 
+
     // Accept message from user:
+    char buffer[1024];
     while (1) {
-        char buffer[1024];
-        fgets(buffer, sizeof buffer, stdin);
+        char* buffer_ptr = fgets(buffer, sizeof buffer, stdin);
+        if (buffer_ptr == NULL) {
+            fprintf(stderr, "Could not read stdin: %s\n", strerror(errno));
+            exit(1);
+        }
         my_broadcast_except(bind_socket_desc, buffer, strlen(buffer), NULL);
     }
 

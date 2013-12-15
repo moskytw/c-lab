@@ -150,9 +150,12 @@ void socket_util_receive(int socket_desc) {
             fprintf(stderr, "Could not read data: %s.\n", strerror(errno));
             exit(1);
         }
-        write(STDOUT_FILENO, buffer, read_size);
+        if (write(STDOUT_FILENO, buffer, read_size) == -1) {
+            fprintf(stderr, "Could not write data: %s.\n", strerror(errno));
+            exit(1);
+        }
     }
-    if (buffer[read_size-1] != '\n') puts("");
+    if (read_size >= 1 && buffer[read_size-1] != '\n') puts("");
     puts("--- End ---");
     puts("Done.");
 }

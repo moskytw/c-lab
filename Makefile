@@ -12,7 +12,7 @@ all: $(foreach PATH,$(wildcard src/bin/*.c),$(patsubst src/bin/%.c,bin/%,$(PATH)
 
 # Each binary needs the corresponding source file.
 bin/%: src/bin/%.c
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@ -pthread
 
 # Define additional dependences of binary files:
 bin/test_ansi_esc_seq: obj/ansi_esc_seq.o
