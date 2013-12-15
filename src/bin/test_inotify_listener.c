@@ -1,10 +1,8 @@
-#include <stdio.h>
 #include <stdlib.h> // exit
-#include <unistd.h>
+#include <unistd.h> // read, close, sleep
 #include <limits.h> // PATH_MAX
 #include <sys/inotify.h>
 #include <pthread.h>
-#include <time.h>
 
 #define INOTIFY_EVENT_BASE_SIZE (sizeof (struct inotify_event))
 #define BUFFER_SIZE (INOTIFY_EVENT_BASE_SIZE+PATH_MAX)
@@ -70,6 +68,8 @@ int listener_add_watch(listener_t* listener_ptr, const char* pathname, uint32_t 
 int listener_rm_watch(listener_t* listener_ptr, int watch_desc) {
     return inotify_rm_watch(listener_ptr->inotify_desc, watch_desc);
 }
+
+#include <stdio.h>
 
 void* my_on_event(struct inotify_event* event_ptr) {
 
